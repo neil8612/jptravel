@@ -1,0 +1,2479 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="北海道2025">
+<meta name="theme-color" content="#ffffff">
+<title>北海道 2025</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --teal:#1D9E75;--teal-l:#E1F5EE;--teal-m:#9FE1CB;--teal-d:#085041;
+  --purple:#7F77DD;--purple-l:#EEEDFE;--purple-d:#3C3489;
+  --pink:#D4537E;--pink-l:#FBEAF0;--pink-d:#72243E;
+  --amber:#BA7517;--amber-l:#FAEEDA;--amber-d:#633806;
+  --blue:#378ADD;--blue-l:#E6F1FB;--blue-d:#0C447C;
+  --red:#A32D2D;--red-l:#FCEBEB;--red-m:#F7C1C1;
+  --green:#639922;--green-l:#EAF3DE;
+  --bg:#f5f5f0;--card:#ffffff;--border:rgba(0,0,0,0.08);
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --r:12px;--r2:20px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0f0f0f;--card:#1a1a1a;--border:rgba(255,255,255,0.08);
+    --text:#f0f0f0;--text2:#aaa;--text3:#666;
+    --teal-l:#0a3d2e;--purple-l:#1e1b3d;--pink-l:#2d1520;
+    --amber-l:#2d1f05;--blue-l:#0a1f35;--red-l:#2d0a0a;--green-l:#1a2a0a;
+  }
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#app{height:100dvh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;background:var(--bg)}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen.active{display:flex}
+
+/* TOP BAR */
+.topbar{background:var(--card);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.topbar-main{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0}
+.app-title{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.app-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.day-badge{font-size:11px;background:var(--teal-l);color:var(--teal-d);padding:4px 10px;border-radius:20px;font-weight:500}
+.day-tabs{display:flex;gap:2px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
+.day-tabs::-webkit-scrollbar{display:none}
+.dtab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:7px 11px 0;border:none;background:transparent;cursor:pointer;border-bottom:2.5px solid transparent;color:var(--text2);font-size:13px;font-weight:500;border-radius:6px 6px 0 0;transition:all .15s;min-width:52px;line-height:1.35}
+.dtab span{font-size:10px;color:var(--text3);margin-top:2px}
+.dtab.on{color:var(--teal);border-bottom-color:var(--teal);background:rgba(29,158,117,.06)}
+.dtab.today-tab{position:relative}
+.dtab.today-tab::after{content:'今天';position:absolute;top:2px;right:2px;font-size:8px;background:#F59E0B;color:#fff;border-radius:4px;padding:0 3px;font-weight:700;line-height:1.4}
+.dtab:active{opacity:.7}
+.today-btn{font-size:11px;background:#FEF3C7;color:#92400E;border:0.5px solid #F59E0B;border-radius:8px;padding:4px 9px;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0}
+.stop-hint{font-size:11px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chk-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;color:transparent;transition:all .15s}
+.chk-btn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.expand-arrow{font-size:12px;color:var(--text3);flex-shrink:0;transition:transform .2s;margin-left:2px}
+.expand-arrow.open{transform:rotate(180deg)}
+.edit-btn{font-size:11px;font-weight:500;color:var(--text2);background:var(--bg);border:0.5px solid var(--border);border-radius:7px;padding:4px 9px;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap}
+.edit-btn:active{background:var(--border)}
+
+/* SCROLL AREA */
+.scroll-area{flex:1;overflow-y:auto;padding:10px 12px 80px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+
+/* WEATHER */
+.wx-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.wx-row{display:flex;align-items:center;gap:12px}
+.wx-emoji{font-size:32px;line-height:1}
+.wx-info{flex:1}
+.wx-loc{font-size:11px;color:var(--text2)}
+.wx-temp-row{display:flex;align-items:baseline;gap:6px;margin:2px 0}
+.wx-temp{font-size:22px;font-weight:600}
+.wx-range{font-size:12px;color:var(--text2)}
+.wx-desc{font-size:12px;color:var(--text2)}
+.wx-pills{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.wx-pill{font-size:11px;background:var(--bg);border:0.5px solid var(--border);border-radius:20px;padding:3px 9px;color:var(--text2)}
+.wx-warn{margin-top:8px;background:var(--amber-l);border:0.5px solid rgba(186,117,23,.3);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--amber-d);display:flex;align-items:center;gap:6px}
+.wx-loading{color:var(--text3);font-size:12px;padding:4px 0}
+
+/* TRANSPORT CARD */
+.tx-card{background:var(--teal-l);border:0.5px solid var(--teal-m);border-radius:var(--r);padding:11px 13px;display:flex;align-items:center;gap:10px}
+.tx-icon{font-size:22px;flex-shrink:0}
+.tx-info{flex:1;min-width:0}
+.tx-line{font-size:13px;font-weight:600;color:var(--teal-d)}
+.tx-detail{font-size:11px;color:var(--teal);margin-top:2px}
+.tx-badge{font-size:10px;background:var(--teal-d);color:#fff;padding:3px 9px;border-radius:6px;white-space:nowrap;flex-shrink:0;font-weight:500}
+
+/* PROGRESS */
+.prog-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 13px}
+.prog-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text2);margin-bottom:7px}
+.prog-count{color:var(--teal);font-weight:600}
+.prog-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .4s ease}
+
+/* STOP CARDS */
+.stop-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);transition:opacity .2s,transform .15s;cursor:pointer}
+.stop-card.done{opacity:.5}
+.stop-card.dragging{opacity:.5;transform:scale(.98)}
+.stop-head{display:flex;align-items:center;gap:9px;padding:11px 12px 11px 10px;border-radius:var(--r);}
+.stop-bar{width:3px;border-radius:0;flex-shrink:0;align-self:stretch;min-height:36px}
+.stop-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.stop-inf{flex:1;min-width:0}
+.stop-time{font-size:11px;color:var(--text3)}
+.stop-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stop-tags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.stop-body{padding:0 12px 10px 14px;border-top:0.5px solid var(--border);border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.chk-btn.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.stop-body-inner{display:flex;align-items:flex-start;gap:8px;padding-top:9px}
+.stop-body-text{flex:1;font-size:12px;color:var(--text2);line-height:1.6}
+.nav-btn{font-size:10px;background:var(--teal-l);color:var(--teal-d);border:0.5px solid var(--teal-m);padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-weight:500;text-decoration:none;display:block}
+
+/* ADD BUTTON */
+.fab{position:fixed;bottom:74px;right:16px;width:48px;height:48px;border-radius:50%;background:var(--teal);color:#fff;font-size:22px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(29,158,117,.4);z-index:10;transition:transform .15s}
+.fab:active{transform:scale(.93)}
+
+/* MAP SCREEN */
+.map-topbar{background:var(--card);padding:11px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.map-title{font-size:15px;font-weight:600}
+.map-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.gps-btn{font-size:11px;background:var(--teal-l);color:var(--teal-d);border:0.5px solid var(--teal-m);padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:500;white-space:nowrap}
+#google-map{flex:1;z-index:0;position:relative;min-height:200px}
+.gmap-no-key{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:var(--bg);color:var(--text2);font-size:13px;text-align:center;padding:20px}
+.gmap-no-key-btn{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+/* BOTTOM SHEET */
+.map-sheet{background:var(--card);border-radius:20px 20px 0 0;flex-shrink:0;display:flex;flex-direction:column;max-height:70vh;transition:height .25s cubic-bezier(.32,.72,0,1);overflow:hidden;box-shadow:0 -2px 16px rgba(0,0,0,.12)}
+.map-sheet-handle{display:flex;justify-content:center;padding:10px 0 6px;cursor:ns-resize;flex-shrink:0;touch-action:none}
+.sheet-handle-bar{width:36px;height:4px;background:var(--border);border-radius:2px}
+/* map screen layout handled by .screen class */
+.next-banner{background:var(--teal);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-radius:0}
+.next-left{flex:1;min-width:0}
+.next-tag{font-size:9px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.next-name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-dist{font-size:11px;color:#9FE1CB;margin-top:2px}
+.next-go{background:#fff;color:#085041;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:none;display:flex;align-items:center;gap:5px}
+.gmap-badge{background:#4285F4;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px}
+/* TAB BAR */
+.map-tab-bar{display:flex;align-items:center;background:var(--card);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);flex-shrink:0}
+.map-tab{flex:1;padding:9px 6px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--text2);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;font-family:inherit}
+.map-tab.on{color:var(--teal);border-bottom-color:var(--teal);background:rgba(29,158,117,.05)}
+.map-tab-nearby-mode{font-size:11px;font-weight:600;padding:7px 10px;border:none;background:var(--bg);color:var(--text2);cursor:pointer;font-family:inherit;border-radius:8px;margin:4px 8px 4px 0;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.map-tab-nearby-mode.active{background:var(--teal);color:#fff}
+.nearby-type-row{display:flex;gap:5px;padding:8px 12px;overflow-x:auto;scrollbar-width:none;border-bottom:0.5px solid var(--border);background:var(--card);flex-shrink:0}
+.nearby-type-row::-webkit-scrollbar{display:none}
+.nearby-type-btn{flex-shrink:0;font-size:11px;padding:4px 10px;border-radius:12px;border:0.5px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+.nearby-type-btn.on{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d);font-weight:600}
+.eye-btn{width:34px;height:34px;border-radius:8px;border:0.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .15s;color:var(--text2)}
+.eye-btn.hidden{background:var(--bg);color:var(--text3);opacity:.5}
+.clear-markers-btn{flex-shrink:0;font-size:11px;font-weight:600;padding:6px 10px;border:none;background:#FCEBEB;color:#A32D2D;cursor:pointer;font-family:inherit;border-radius:8px;transition:all .15s;white-space:nowrap}
+.map-tab-nearby-mode{font-size:11px;font-weight:600;padding:9px 8px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0;border-bottom:2.5px solid transparent}
+.map-tab-nearby-mode.active{color:var(--teal);border-bottom-color:var(--teal);background:rgba(29,158,117,.05)}
+.map-tab-panel{display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;padding-bottom:20px}
+.map-tab-panel.active{display:flex;flex-direction:column}
+/* Stop list rows */
+.map-stop-scroll{background:var(--card)}
+.ms-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .1s}
+.ms-row:last-child{border-bottom:none}
+.ms-row:hover{background:var(--bg)}
+.ms-row.ms-active{background:var(--teal-l)}
+.ms-row.ms-done{opacity:.45}
+.ms-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;border:1.5px solid var(--border);color:var(--text2)}
+.ms-num.ms-ck{background:var(--teal);border-color:var(--teal);color:#fff}
+.ms-num.ms-nxt{background:var(--teal);border-color:var(--teal);color:#fff}
+.ms-ic{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ms-inf{flex:1;min-width:0}
+.ms-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-meta{font-size:10px;color:var(--text2);margin-top:2px;display:flex;gap:6px}
+.ms-dist{color:var(--teal);font-weight:600}
+.ms-row.ms-hidden{opacity:.5}
+.ms-nav{background:#E8F0FE;color:#4285F4;border:none;border-radius:6px;padding:5px 8px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:none;display:flex;align-items:center}
+.ms-view{background:var(--teal-l);color:var(--teal-d);border:0.5px solid var(--teal-m);border-radius:6px;padding:5px 8px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center}
+.ms-btns{display:flex;gap:4px;flex-shrink:0}
+.nearby-nav{background:#E8F0FE;color:#4285F4;border:none;border-radius:6px;padding:5px 8px;font-size:10px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nearby-view{background:var(--teal-l);color:var(--teal-d);border:0.5px solid var(--teal-m);border-radius:6px;padding:5px 8px;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;flex-shrink:0}
+.nearby-btns{display:flex;gap:4px;flex-shrink:0}
+/* Nearby panel */
+.nearby-range-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:0.5px solid var(--border);background:var(--card);flex-shrink:0}
+.nearby-range-label{font-size:11px;color:var(--text2);flex:1}
+.nearby-range-btns{display:flex;gap:4px}
+.range-btn{font-size:10px;padding:3px 9px;border-radius:8px;border:0.5px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s}
+.range-btn.on{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d);font-weight:600}
+.nearby-count{font-size:10px;color:var(--text3);min-width:24px;text-align:right}
+.nearby-empty{padding:20px 14px;font-size:12px;color:var(--text3);text-align:center}
+.nearby-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:0.5px solid var(--border);background:var(--card)}
+.nearby-row:last-child{border-bottom:none}
+.nearby-ic{font-size:18px;flex-shrink:0;width:24px;text-align:center}
+.nearby-inf{flex:1;min-width:0}
+.nearby-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nearby-meta{font-size:11px;color:var(--text2);margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nearby-stars{color:#F59E0B;font-weight:600}
+.nearby-open{color:#1D9E75;font-weight:500}
+.nearby-closed{color:#E24B4A;font-weight:500}
+.nearby-cat{background:var(--bg);border-radius:6px;padding:1px 6px;color:var(--text3);border:0.5px solid var(--border)}
+.nearby-dist{color:var(--teal);font-weight:600}
+.nearby-nav{background:#E8F0FE;color:#4285F4;border:none;border-radius:6px;padding:5px 9px;font-size:10px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.track-on{background:var(--teal-d)!important;color:white!important;border-color:var(--teal-d)!important}
+.pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#9FE1CB;margin-right:4px;animation:pdot 1.5s infinite}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* MAP FILTER removed - using eye button instead */
+.map-tab-nearby-mode{font-size:11px;font-weight:600;padding:5px 10px;border:0.5px solid var(--teal-m);background:var(--teal-l);color:var(--teal-d);cursor:pointer;font-family:inherit;border-radius:8px;transition:all .15s;white-space:nowrap}
+.map-tab-nearby-mode.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+/* SEARCH for add modal */
+.search-row{display:flex;gap:6px;margin-bottom:8px}
+.search-input{flex:1;background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:9px 13px;font-size:14px;color:var(--text);font-family:inherit;outline:none}
+.search-input:focus{border-color:var(--teal)}
+.search-btn{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.search-results{max-height:160px;overflow-y:auto;border:0.5px solid var(--border);border-radius:10px;margin-bottom:8px;display:none}
+.search-result-item{padding:9px 13px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--border)}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--bg)}
+/* AI no-key state */
+.ai-nokey{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px 20px;text-align:center;gap:12px}
+.ai-nokey-icon{font-size:40px}
+.ai-nokey-title{font-size:16px;font-weight:600}
+.ai-nokey-desc{font-size:13px;color:var(--text2);line-height:1.6}
+.ai-nokey-btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+
+.bnav-btn{position:relative}
+.bnav-label{font-size:9px}
+.bnav-badge{position:absolute;top:4px;right:calc(50% - 18px);background:#E24B4A;color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px;min-width:16px;text-align:center;line-height:1.4;display:none}
+.bnav-badge.show{display:block}
+
+/* TRANSPORT SCREEN */
+.tx-section{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
+.tx-section-head{padding:11px 13px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg)}
+.tx-route-badge{font-size:11px;font-weight:600;background:var(--teal-l);color:var(--teal-d);padding:3px 9px;border-radius:6px;border:0.5px solid var(--teal-m)}
+.tx-route-name{font-size:13px;font-weight:600;flex:1}
+.tx-gmaps{font-size:11px;font-weight:700;background:#E8F0FE;color:#4285F4;border:none;border-radius:7px;padding:5px 10px;text-decoration:none;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.tx-timetable{padding:10px 13px;border-bottom:0.5px solid var(--border)}
+.tx-timetable-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.tx-times{display:flex;gap:6px;flex-wrap:wrap}
+.tx-time{font-size:11px;background:var(--bg);border:0.5px solid var(--border);border-radius:6px;padding:3px 8px;font-weight:500}
+.tx-time.recommended{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d);font-weight:600}
+.tx-steps-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:10px 13px 6px}
+.tx-step{display:flex;align-items:flex-start;gap:10px;padding:8px 13px;border-bottom:0.5px solid var(--border)}
+.tx-step:last-child{border-bottom:none}
+.tx-step-num{width:20px;height:20px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:var(--text2)}
+.tx-step-num.done{background:var(--teal);border-color:var(--teal);color:#fff}
+.tx-step-body{flex:1}
+.tx-step-text{font-size:12px;line-height:1.5}
+.tx-warn{display:flex;align-items:flex-start;gap:6px;background:var(--red-l);border:0.5px solid rgba(163,45,45,.2);border-radius:7px;padding:7px 10px;margin-top:5px;font-size:11px;color:var(--red);line-height:1.5}
+.tx-note{display:flex;align-items:flex-start;gap:6px;background:var(--amber-l);border:0.5px solid rgba(186,117,23,.2);border-radius:7px;padding:7px 10px;margin-top:5px;font-size:11px;color:var(--amber);line-height:1.5}
+.tx-step-chk{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.tx-step-chk.on{background:var(--teal);border-color:var(--teal);color:#fff;font-size:10px}
+
+/* TIME AWARENESS */
+.time-status{display:flex;align-items:center;gap:6px;padding:4px 0 2px;font-size:10px}
+.ts-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ts-on-time{color:#0F6E56}
+.ts-late{color:#E24B4A}
+.ts-upcoming{color:var(--text3)}
+.stop-card.time-late .stop-head{border-left:3px solid #E24B4A}
+.stop-card.time-next .stop-head{border-left:3px solid var(--teal)}
+
+/* INSTALL PROMPT */
+.install-prompt{position:fixed;bottom:70px;left:0;right:0;z-index:25;padding:0 12px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.install-content{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.install-icon{font-size:26px;flex-shrink:0}
+.install-title{font-size:13px;font-weight:600}
+.install-desc{font-size:11px;color:var(--text2);margin-top:2px}
+.install-close{background:transparent;border:none;font-size:18px;color:var(--text3);cursor:pointer;flex-shrink:0;padding:0 4px}
+
+/* ANIMATIONS */
+.screen{animation:none}
+.screen.active{animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:.7;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.chk-btn.bounce{animation:bounce .3s ease}
+@keyframes bounce{0%{transform:scale(1)}40%{transform:scale(1.3)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+.stop-card{transition:opacity .2s,transform .15s,border-color .15s}
+.stop-card.done{opacity:.45}
+.ms-row{transition:background .15s}
+.map-tab{transition:color .15s,border-color .15s,background .15s}
+.bnav-btn{transition:color .15s}
+.dtab{transition:color .15s,border-color .15s,background .15s}
+
+/* AI SCREEN */
+.ai-topbar{background:var(--card);border-bottom:0.5px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:var(--purple-l);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ai-name{font-size:14px;font-weight:600}
+.ai-status{font-size:11px;color:var(--teal);margin-top:1px}
+.ai-key-btn{margin-left:auto;font-size:11px;background:var(--bg);border:0.5px solid var(--border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2)}
+#chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.msg-wrap{display:flex;flex-direction:column}
+.msg-wrap.user{align-items:flex-end}
+.msg-wrap.ai{align-items:flex-start}
+.bubble{padding:10px 13px;border-radius:16px;font-size:13px;line-height:1.6;max-width:85%}
+.msg-wrap.ai .bubble{background:var(--card);border:0.5px solid var(--border);border-radius:16px 16px 16px 4px}
+.msg-wrap.user .bubble{background:var(--teal);color:#fff;border-radius:16px 16px 4px 16px}
+.msg-time{font-size:10px;color:var(--text3);margin-top:4px;padding:0 4px}
+.msg-typing{display:flex;align-items:center;gap:4px;padding:12px 14px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .8s infinite}
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.quick-row{padding:8px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-top:0.5px solid var(--border);background:var(--card)}
+.quick-row::-webkit-scrollbar{display:none}
+.qbtn{flex-shrink:0;font-size:11px;padding:6px 12px;border-radius:14px;border:0.5px solid var(--border);background:var(--bg);cursor:pointer;white-space:nowrap;color:var(--text);font-family:inherit}
+.qbtn:active{opacity:.7}
+.ai-input-row{background:var(--card);border-top:0.5px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+#ai-input{flex:1;background:var(--bg);border:0.5px solid var(--border);border-radius:20px;padding:9px 14px;font-size:13px;outline:none;color:var(--text);font-family:inherit;resize:none;max-height:80px;line-height:1.4}
+.send-btn{width:36px;height:36px;border-radius:50%;background:var(--teal);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:transform .1s;font-family:inherit}
+.send-btn:active{transform:scale(.9)}
+.send-btn:disabled{background:var(--border);cursor:not-allowed}
+
+/* EMERGENCY SCREEN */
+.em-topbar{background:var(--red-l);border-bottom:0.5px solid var(--red-m);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.em-title{font-size:16px;font-weight:600;color:var(--red)}
+.em-sub{font-size:11px;color:rgba(163,45,45,.7);margin-top:2px}
+.offline-tag{margin-left:auto;font-size:10px;background:var(--green-l);color:var(--green);border:0.5px solid rgba(99,153,34,.3);border-radius:10px;padding:3px 9px;font-weight:600}
+.em-section{margin-bottom:4px}
+.em-label{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;padding:0 2px;margin-bottom:6px}
+.em-group{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+.em-row{display:flex;align-items:center;gap:11px;padding:11px 13px;border-bottom:0.5px solid var(--border)}
+.em-row:last-child{border-bottom:none}
+.em-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.em-info{flex:1;min-width:0}
+.em-iname{font-size:13px;font-weight:500}
+.em-ival{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.call-btn{font-size:11px;background:var(--red-l);color:var(--red);border:0.5px solid var(--red-m);padding:5px 11px;border-radius:7px;cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none;display:block}
+.steps-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--r);padding:13px;font-size:12px;line-height:1.9;color:var(--text)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--card);border-top:0.5px solid var(--border);display:flex;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 6px;border:none;background:transparent;cursor:pointer;color:var(--text3);font-size:9px;font-family:inherit;transition:color .15s}
+.bnav-btn.on{color:var(--teal)}
+.bnav-ic{font-size:22px;line-height:1}
+
+/* ACTION SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:all}
+.action-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--card);border-radius:20px 20px 0 0;z-index:31;transition:transform .25s cubic-bezier(.32,.72,0,1);padding:8px 12px 40px}
+.action-sheet.show{transform:translateX(-50%) translateY(0)}
+.as-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:8px auto 16px}
+.as-title{font-size:13px;font-weight:600;padding:0 4px 12px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
+.as-btn{width:100%;padding:13px 14px;border:none;background:transparent;text-align:left;font-size:14px;cursor:pointer;border-radius:10px;display:flex;align-items:center;gap:12px;color:var(--text);font-family:inherit;transition:background .1s}
+.as-btn:active,.as-btn:hover{background:var(--bg)}
+.as-btn.danger{color:#e53935}
+.as-btn-ic{font-size:18px;width:28px;text-align:center}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;pointer-events:none;opacity:0;transition:opacity .2s}
+.modal.show{opacity:1;pointer-events:all}
+.modal-box{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:430px;margin:0 auto;padding:16px 16px 40px;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,.72,0,1)}
+.modal.show .modal-box{transform:translateY(0)}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.form-input{width:100%;background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);font-family:inherit;outline:none}
+.form-input:focus{border-color:var(--teal)}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.type-opt{padding:8px 6px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;text-align:center}
+.type-opt.on{border-color:var(--teal);background:var(--teal-l);color:var(--teal-d);font-weight:600}
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:4px}
+.icon-opt{width:100%;aspect-ratio:1;background:var(--bg);border:0.5px solid var(--border);border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s}
+.icon-opt.sel{background:var(--teal-l);border-color:var(--teal)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-cancel{flex:1;padding:12px;border:0.5px solid var(--border);background:transparent;border-radius:12px;font-size:14px;cursor:pointer;color:var(--text);font-family:inherit}
+.btn-save{flex:2;padding:12px;background:var(--teal);border:none;border-radius:12px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit}
+
+/* API KEY MODAL */
+.key-modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.key-modal.show{opacity:1;pointer-events:all}
+.key-box{background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:380px}
+.key-title{font-size:17px;font-weight:600;margin-bottom:6px}
+.key-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.key-input{width:100%;background:var(--bg);border:0.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--text);font-family:monospace;outline:none;margin-bottom:12px}
+.key-input:focus{border-color:var(--teal)}
+.key-save{width:100%;padding:13px;background:var(--teal);border:none;border-radius:12px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit}
+.key-skip{width:100%;padding:10px;background:transparent;border:none;font-size:13px;color:var(--text2);cursor:pointer;margin-top:6px;font-family:inherit}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+<div id="app">
+
+<!-- ═══ ITINERARY SCREEN ═══ -->
+<div id="screen-itinerary" class="screen active">
+  <div class="topbar">
+    <div class="topbar-main">
+      <div>
+        <div class="app-title">北海道 2025 🗾</div>
+        <div class="app-sub">7月13日 – 7月20日 · 8天7夜</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="today-btn" id="today-btn" onclick="goToday()" style="display:none">↩ 今天</button>
+        <button class="today-btn" onclick="showKeyModal()" style="background:var(--bg);color:var(--text2);border-color:var(--border)">⚙️</button>
+        <div class="day-badge" id="cur-day-badge">第1天</div>
+      </div>
+    </div>
+    <div class="day-tabs" id="day-tabs"></div>
+  </div>
+  <div class="scroll-area" id="itinerary-content"></div>
+  <button class="fab" id="fab-add" onclick="openAddModal()">＋</button>
+</div>
+
+<!-- ═══ MAP SCREEN ═══ -->
+<div id="screen-map" class="screen">
+  <div class="map-topbar">
+    <div>
+      <div class="map-title" id="map-title">今日路線</div>
+      <div class="map-meta" id="map-meta">載入中…</div>
+    </div>
+    <button class="gps-btn" id="gps-track-btn" onclick="toggleTracking()">📍 定位</button>
+  </div>
+  <div id="google-map"></div>
+  <div class="map-sheet" id="map-sheet">
+    <div class="map-sheet-handle" id="map-sheet-handle">
+      <div class="sheet-handle-bar"></div>
+    </div>
+    <div class="next-banner">
+      <div class="next-left">
+        <div class="next-tag">下一站 · 距離最近</div>
+        <div class="next-name" id="next-stop-name">計算中…</div>
+        <div class="next-dist" id="next-stop-dist">取得 GPS 中</div>
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="next-go" onclick="viewNextOnMap()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);padding:8px 10px">📍</button>
+        <a class="next-go" id="next-go-btn" href="#" target="_blank">🗺️ 導航</a>
+      </div>
+    </div>
+    <!-- TAB BAR -->
+    <div class="map-tab-bar">
+      <button class="map-tab on" id="mtab-stops" onclick="switchMapTab('stops')">📍 今日景點</button>
+      <button class="map-tab" id="mtab-nearby" onclick="switchMapTab('nearby')">✨ 附近好去處</button>
+      <button class="map-tab-nearby-mode" id="nearby-mode-btn" onclick="toggleNearbyMode()">📍 附近模式</button>
+      <button class="clear-markers-btn" id="clear-markers-btn" onclick="clearAllTempMarkers()" style="display:none">✕ 清除標點</button>
+    </div>
+    <!-- TAB PANELS -->
+    <div class="map-tab-panel active" id="mpanel-stops">
+      <div class="map-stop-scroll" id="map-stop-scroll"></div>
+    </div>
+    <div class="map-tab-panel" id="mpanel-nearby">
+      <div class="nearby-range-row">
+        <span class="nearby-range-label">📍 您周圍的推薦</span>
+        <div class="nearby-range-btns">
+          <button class="range-btn" onclick="setNearbyRange(200)">200m</button>
+          <button class="range-btn on" onclick="setNearbyRange(400)">400m</button>
+          <button class="range-btn" onclick="setNearbyRange(1000)">1km</button>
+        </div>
+        <span class="nearby-count" id="nearby-count">—</span>
+      </div>
+      <div class="nearby-type-row">
+        <button class="nearby-type-btn on" onclick="setNearbyType('all')">全部</button>
+        <button class="nearby-type-btn on" onclick="setNearbyType('food')">🍜 餐飲</button>
+        <button class="nearby-type-btn on" onclick="setNearbyType('cafe')">☕ 咖啡</button>
+        <button class="nearby-type-btn on" onclick="setNearbyType('shop')">🛍️ 購物</button>
+        <button class="nearby-type-btn on" onclick="setNearbyType('transit')">🚉 車站</button>
+      </div>
+      <div id="nearby-list"><div class="nearby-empty">開啟追蹤後自動搜尋</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AI SCREEN ═══ -->
+<div id="screen-ai" class="screen">
+  <div class="ai-topbar">
+    <div class="ai-avatar">🤖</div>
+    <div>
+      <div class="ai-name">旅途問答助理</div>
+      <div class="ai-status" id="ai-status">了解你的完整行程</div>
+    </div>
+    <button class="ai-key-btn" onclick="showKeyModal()">🔑 AI 金鑰</button>
+  </div>
+  <div id="ai-nokey-screen" class="ai-nokey" style="display:none">
+    <div class="ai-nokey-icon">🤖</div>
+    <div class="ai-nokey-title">問答功能尚未啟用</div>
+    <div class="ai-nokey-desc">這個功能可以回答您的旅遊問題，<br>例如「這道菜有蔥嗎？」「神社御守怎麼使用？」<br><br>需要設定一組 AI 助理金鑰才能使用。</div>
+    <button class="ai-nokey-btn" onclick="showKeyModal()">🔑 設定 AI 助理金鑰</button>
+  </div>
+  <div id="chat-messages"></div>
+  <div class="quick-row" id="quick-actions"></div>
+  <div class="ai-input-row">
+    <textarea id="ai-input" placeholder="問任何關於旅途的事…" rows="1" onkeydown="aiKeydown(event)"></textarea>
+    <button class="send-btn" id="send-btn" onclick="sendAI()">↑</button>
+  </div>
+</div>
+
+<!-- ═══ EMERGENCY SCREEN ═══ -->
+<div id="screen-emergency" class="screen">
+  <div class="em-topbar">
+    <div style="font-size:26px">🚨</div>
+    <div>
+      <div class="em-title">緊急資訊</div>
+      <div class="em-sub">完全離線可用 · 無需網路</div>
+    </div>
+    <span class="offline-tag">📴 離線</span>
+  </div>
+  <div class="scroll-area" style="gap:14px">
+    <div class="em-section">
+      <div class="em-label">緊急電話</div>
+      <div class="em-group">
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--red-l)">🚑</div>
+          <div class="em-info"><div class="em-iname">救護車・火警</div><div class="em-ival">119</div></div>
+          <a href="tel:119" class="call-btn">撥打</a>
+        </div>
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--red-l)">🚔</div>
+          <div class="em-info"><div class="em-iname">警察報案</div><div class="em-ival">110</div></div>
+          <a href="tel:110" class="call-btn">撥打</a>
+        </div>
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--blue-l)">🏛️</div>
+          <div class="em-info"><div class="em-iname">台灣駐日辦事處（札幌）</div><div class="em-ival">+81-11-222-2930</div></div>
+          <a href="tel:+81112222930" class="call-btn">撥打</a>
+        </div>
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--blue-l)">🏛️</div>
+          <div class="em-info"><div class="em-iname">台灣駐日辦事處（東京）</div><div class="em-ival">+81-3-3280-7811</div></div>
+          <a href="tel:+81332807811" class="call-btn">撥打</a>
+        </div>
+      </div>
+    </div>
+    <div class="em-section">
+      <div class="em-label">住宿資訊</div>
+      <div class="em-group">
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--teal-l)">🏨</div>
+          <div class="em-info"><div class="em-iname">京急 EX Hotel 札幌</div><div class="em-ival">北海道札幌市北区北6条西6丁目</div></div>
+        </div>
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--teal-l)">📍</div>
+          <div class="em-info"><div class="em-iname">飯店方向口訣</div><div class="em-ival">札幌站北口出，過馬路正前方</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="em-section">
+      <div class="em-label">護照遺失 SOP</div>
+      <div class="steps-card">
+        1️⃣ 立即撥打台灣駐日辦事處<br>
+        2️⃣ 前往最近警察局報案<br>
+        3️⃣ 取得「遺失證明書（遺失届受理証明書）」<br>
+        4️⃣ 持遺失證明至辦事處申請「入國證明書」<br>
+        5️⃣ 持入國證明書即可辦理回台登機手續<br>
+        <br>⚠️ 申請時需要：護照影本或照片（建議存在手機）、日本駕照/其他身分證件
+      </div>
+    </div>
+    <div class="em-section">
+      <div class="em-label">信用卡掛失</div>
+      <div class="em-group">
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--amber-l)">💳</div>
+          <div class="em-info"><div class="em-iname">VISA 全球緊急服務</div><div class="em-ival">+1-303-967-1096（國際）</div></div>
+          <a href="tel:+13039671096" class="call-btn">撥打</a>
+        </div>
+        <div class="em-row">
+          <div class="em-icon" style="background:var(--amber-l)">💳</div>
+          <div class="em-info"><div class="em-iname">Mastercard 緊急服務</div><div class="em-ival">+1-636-722-7111（國際）</div></div>
+          <a href="tel:+16367227111" class="call-btn">撥打</a>
+        </div>
+      </div>
+    </div>
+    <div class="em-section">
+      <div class="em-label">五辛說明卡（給店員看）</div>
+      <div class="steps-card" style="text-align:center;font-size:15px;line-height:2">
+        <strong>五辛抜きでお願いします</strong><br>
+        <span style="font-size:12px;color:var(--text2)">ネギ・玉ねぎ・ニンニク・ニラ・ラッキョウ</span><br>
+        <span style="font-size:11px;color:var(--text3)">（蔥・洋蔥・蒜・韭菜・蕗蕎 不使用）</span>
+      </div>
+    </div>
+    <div class="em-section">
+      <div class="em-label">常用日文緊急句</div>
+      <div class="em-group">
+        <div class="em-row"><div class="em-icon" style="background:var(--purple-l)">🆘</div><div class="em-info"><div class="em-iname">助けてください！</div><div class="em-ival">救命！（tasukete kudasai）</div></div></div>
+        <div class="em-row"><div class="em-icon" style="background:var(--purple-l)">🏥</div><div class="em-info"><div class="em-iname">病院に連れて行ってください</div><div class="em-ival">請送我去醫院</div></div></div>
+        <div class="em-row"><div class="em-icon" style="background:var(--purple-l)">🔍</div><div class="em-info"><div class="em-iname">パスポートをなくしました</div><div class="em-ival">我的護照不見了</div></div></div>
+        <div class="em-row"><div class="em-icon" style="background:var(--purple-l)">❓</div><div class="em-info"><div class="em-iname">日本語がわかりません</div><div class="em-ival">我不懂日文</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TRANSPORT SCREEN ═══ -->
+<div id="screen-transport" class="screen">
+  <div class="topbar" style="flex-shrink:0">
+    <div class="topbar-main">
+      <div>
+        <div class="app-title">交通指引 🚆</div>
+        <div class="app-sub">靜態時刻表 · 每段搭車 SOP</div>
+      </div>
+      <div class="day-badge" id="tx-day-badge">第1天</div>
+    </div>
+    <div class="day-tabs" id="tx-day-tabs"></div>
+  </div>
+  <div class="scroll-area" id="transport-content"></div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-btn on" onclick="showScreen('itinerary')" data-screen="itinerary">
+    <div class="bnav-ic">📋</div>
+    <span class="bnav-label">行程</span>
+    <span class="bnav-badge" id="badge-itinerary"></span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('map')" data-screen="map">
+    <div class="bnav-ic">🗺️</div>
+    <span class="bnav-label">地圖</span>
+    <span class="bnav-badge" id="badge-map"></span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('transport')" data-screen="transport">
+    <div class="bnav-ic">🚆</div>
+    <span class="bnav-label">交通</span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('ai')" data-screen="ai">
+    <div class="bnav-ic">🤖</div>
+    <span class="bnav-label">問答</span>
+  </button>
+  <button class="bnav-btn" onclick="showScreen('emergency')" data-screen="emergency">
+    <div class="bnav-ic">🚨</div>
+    <span class="bnav-label">緊急</span>
+  </button>
+</nav>
+
+<!-- ═══ INSTALL PROMPT ═══ -->
+<div class="install-prompt" id="install-prompt" style="display:none">
+  <div class="install-content">
+    <div class="install-icon">🗾</div>
+    <div class="install-text">
+      <div class="install-title">加入主畫面</div>
+      <div class="install-desc" id="install-desc">點下方分享按鈕 → 加入主畫面</div>
+    </div>
+    <button class="install-close" onclick="closeInstall()">✕</button>
+  </div>
+</div>
+
+<!-- ═══ ACTION SHEET ═══ -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+<div class="action-sheet" id="action-sheet">
+  <div class="as-handle"></div>
+  <div class="as-title" id="as-title">選擇操作</div>
+  <button class="as-btn" onclick="asEdit()"><span class="as-btn-ic">✏️</span>編輯時間與備註</button>
+  <button class="as-btn" onclick="asMove()"><span class="as-btn-ic">📅</span>移到其他天</button>
+  <button class="as-btn danger" onclick="asDelete()"><span class="as-btn-ic">🗑️</span>刪除此景點</button>
+</div>
+
+<!-- ═══ EDIT MODAL ═══ -->
+<div class="modal" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">新增景點</div>
+    <div class="form-group" id="search-group">
+      <div class="form-label">🔍 搜尋地點（自動取得座標）</div>
+      <div class="search-row">
+        <input class="search-input" id="search-input" type="text" placeholder="例如：六花亭神宮茶屋">
+        <button class="search-btn" onclick="searchPlace()">搜尋</button>
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">時間</div>
+      <input class="form-input" id="edit-time" type="time">
+    </div>
+    <div class="form-group">
+      <div class="form-label">景點名稱</div>
+      <input class="form-input" id="edit-name" type="text" placeholder="景點名稱">
+    </div>
+    <div class="form-group">
+      <div class="form-label">備註</div>
+      <input class="form-input" id="edit-note" type="text" placeholder="備註說明（選填）">
+    </div>
+    <div class="form-group">
+      <div class="form-label">類型</div>
+      <div class="type-grid" id="type-grid">
+        <button class="type-opt on" data-type="spot" data-color="#378ADD" data-bg="#E6F1FB" onclick="selectType(this)">📸 景點</button>
+        <button class="type-opt" data-type="food" data-color="#BA7517" data-bg="#FAEEDA" onclick="selectType(this)">🍱 美食</button>
+        <button class="type-opt" data-type="shop" data-color="#D4537E" data-bg="#FBEAF0" onclick="selectType(this)">🛍️ 購物</button>
+        <button class="type-opt" data-type="shrine" data-color="#7F77DD" data-bg="#EEEDFE" onclick="selectType(this)">⛩️ 神社</button>
+        <button class="type-opt" data-type="transport" data-color="#1D9E75" data-bg="#E1F5EE" onclick="selectType(this)">🚆 交通</button>
+        <button class="type-opt" data-type="nature" data-color="#639922" data-bg="#EAF3DE" onclick="selectType(this)">🌲 自然</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">圖示</div>
+      <div class="icon-grid" id="icon-grid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveEdit()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ API KEY MODAL ═══ -->
+<div class="key-modal" id="key-modal">
+  <div class="key-box">
+    <div class="key-title">⚙️ 設定金鑰</div>
+    <!-- AI Key -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">🤖 AI 問答助理金鑰</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px">啟用旅途問答功能。格式以 sk-ant- 開頭。</div>
+      <input class="key-input" id="key-input" type="password" placeholder="sk-ant-...">
+    </div>
+    <!-- Google Key -->
+    <div style="margin-bottom:16px;padding-top:14px;border-top:0.5px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">🗺️ Google 地圖金鑰</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px">啟用 Google Maps 地圖・附近星級評分・最佳路線。</div>
+      <input class="key-input" id="gkey-input" type="password" placeholder="AIza...">
+    </div>
+    <button class="key-save" onclick="saveAllKeys()">儲存並啟用</button>
+    <button class="key-skip" onclick="closeKeyModal()">稍後再設定</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const DAYS = [
+  {
+    id:1, date:'2025-07-13', label:'D1', title:'札幌・東急百貨', emoji:'🛍️',
+    city:'Sapporo', lat:43.0682, lng:141.3506,
+    transport:{icon:'✈️', line:'桃園機場 → 新千歲機場', detail:'08:15 起飛 · 13:35 抵達 · 快速Airport號'},
+    stops:[
+      {id:'1-1',time:'13:35',name:'新千歲機場購票',icon:'🎫',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['JR購票','指定席'],note:'紫色機器→繁體中文→指定席→快速Airport→2人→840円/人',lat:42.7752,lng:141.6927},
+      {id:'1-2',time:'15:00',name:'飯店 Check-in',icon:'🏨',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['京急EX','北口'],note:'出站找北口→過馬路正前方即是飯店',lat:43.0689,lng:141.3485},
+      {id:'1-3',time:'15:30',name:'東急百貨 Tokyu',icon:'🛍️',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['9F扭蛋','8F文具','7F Uniqlo'],note:'9F 20:00關門先逛→8F Hands→7F Uniqlo/GU',lat:43.0655,lng:141.3534},
+      {id:'1-4',time:'19:15',name:'B1 熟食半額搶購',icon:'🍱',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['半額','水果','稻荷'],note:'蔬菜天婦羅・稻荷壽司・當季水果，避開可樂餅與漢堡排',lat:43.0655,lng:141.3534},
+    ]
+  },
+  {
+    id:2, date:'2025-07-14', label:'D2', title:'北海道神宮・白色戀人', emoji:'⛩️',
+    city:'Sapporo', lat:43.0598, lng:141.3120,
+    transport:{icon:'🚇', line:'地鐵南北線→東西線', detail:'札幌站→大通→圓山公園 (3站)'},
+    stops:[
+      {id:'2-1',time:'09:00',name:'圓山公園',icon:'🌲',type:'spot',color:'#639922',bg:'#EAF3DE',tags:['散策','原始林'],note:'沿平坦參道往神宮走，右手邊巨大原始林',lat:43.0561,lng:141.3149},
+      {id:'2-2',time:'09:30',name:'北海道神宮',icon:'⛩️',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['御守','Hello Kitty','拉拉熊'],note:'Hello Kitty御守・拉拉熊繪馬・限定神酒・大鳥居手水舍拍照',lat:43.0598,lng:141.3120},
+      {id:'2-3',time:'10:00',name:'六花亭 神宮茶屋',icon:'🍡',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['判官樣','免費熱茶'],note:'進門左手邊，買現烤「判官樣」配免費熱茶，坐窗邊看森林',lat:43.0601,lng:141.3128},
+      {id:'2-4',time:'11:45',name:'Maruyama Class 超市',icon:'🍈',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['哈密瓜','北海道櫻桃'],note:'6號出口直通商場B1→MaxValu超市買佐藤錦櫻桃・夕張哈密瓜',lat:43.0551,lng:141.3191},
+      {id:'2-5',time:'12:30',name:'白色戀人公園',icon:'🏰',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['鐘塔','4F下午茶'],note:'宮之澤站4號出口走7分鐘，13:00準時看鐘塔玩偶表演',lat:43.0845,lng:141.3017},
+      {id:'2-6',time:'13:10',name:'Chocolate Lounge 4F',icon:'🍫',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['霜淇淋','聖代','鐵盒'],note:'白色戀人霜淇淋・巧克力聖代・客製化鐵盒・i-gateau蛋糕',lat:43.0845,lng:141.3017},
+      {id:'2-7',time:'15:00',name:'Stellar Place & APIA',icon:'🛍️',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['GU','Hands','3COINS'],note:'5F:GU/Disney → 4F:Global Work/Hands → B1:APIA地下街',lat:43.0680,lng:141.3506},
+      {id:'2-8',time:'17:30',name:'大丸百貨 B1 食品街',icon:'🎁',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['六花亭','北菓樓','退稅'],note:'六花亭・北菓樓米菓・札幌農學校，滿5000日圓記得帶護照退稅',lat:43.0677,lng:141.3494},
+    ]
+  },
+  {
+    id:3, date:'2025-07-15', label:'D3', title:'小樽浪漫快閃・狸小路', emoji:'🌊',
+    city:'Otaru', lat:43.1908, lng:141.0011,
+    transport:{icon:'🚆', line:'札幌 → 南小樽', detail:'09:15 快速Airport · u-seat · 4號車廂 1A/1B'},
+    stops:[
+      {id:'3-1',time:'09:50',name:'住吉神社',icon:'⛩️',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['星守','撫石','打卡'],note:'南小樽站出站往左後走5分鐘。買「星守」・摸大黑天肚子・摸惠比壽鯛魚',lat:43.1840,lng:140.9932},
+      {id:'3-2',time:'10:00',name:'蒸汽鐘・Miffy Kitchen',icon:'🕰️',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['蒸汽鐘','Miffy','Snoopy'],note:'堺町通起點蒸汽鐘15分鐘噴煙→對面Miffy限定麵包→旁邊Snoopy茶屋',lat:43.1908,lng:141.0011},
+      {id:'3-3',time:'10:30',name:'北菓樓・六花亭',icon:'🍮',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['夢不思議泡芙','酒糖'],note:'北菓樓夢不思議大泡芙現吃・隔壁六花亭買酒糖或草莓巧克力夾心',lat:43.1924,lng:141.0006},
+      {id:'3-4',time:'11:00',name:'LeTAO・北一硝子',icon:'🎂',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['起司蛋糕','煤油燈'],note:'LeTAO試吃招牌雙層起司蛋糕・北一硝子3號館167盞煤油燈咖啡館',lat:43.1951,lng:141.0013},
+      {id:'3-5',time:'12:30',name:'小樽運河・出拔小路',icon:'📸',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['打卡','運河','淺草橋'],note:'商店街走到底→出拔小路石造建築→過馬路淺草橋拍運河明信片角度',lat:43.1959,lng:141.0025},
+      {id:'3-6',time:'13:00',name:'JR 小樽站回程',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['中央通','步行10分'],note:'中央通微上坡直走10分鐘→JR小樽站刷Suica搭車',lat:43.1981,lng:141.0036},
+      {id:'3-7',time:'14:20',name:'Pole Town 地下街',icon:'🛍️',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['3COINS','sm2','山雀吊飾'],note:'3COINS→Lowrys Farm→sm2→Earth Music→Bleue Blanche長尾山雀吊飾',lat:43.0603,lng:141.3519},
+      {id:'3-8',time:'16:00',name:'狸小路 3-4 丁目',icon:'🛒',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['Can★Do','Workman Girl','Seria'],note:'Can★Do→Workman Girl機能外套→Seria4F→狸屋第一款狸貓御守',lat:43.0602,lng:141.3521},
+      {id:'3-9',time:'18:45',name:'本陣狸大明神社',icon:'🦝',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['5丁目','第二款御守','青柳屋'],note:'狸小路5丁目神社→第二款狸貓御守→旁邊青柳屋補齊伴手禮',lat:43.0600,lng:141.3512},
+    ]
+  },
+  {
+    id:4, date:'2025-07-16', label:'D4', title:'洞爺湖一日遊', emoji:'🌋',
+    city:'Toyako', lat:42.5831, lng:140.8019,
+    transport:{icon:'🚃', line:'札幌 → 洞爺', detail:'JR室蘭本線・約1.5小時'},
+    stops:[
+      {id:'4-1',time:'09:00',name:'JR 札幌出發',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['室蘭本線'],note:'JR札幌站搭往洞爺方向列車',lat:43.0682,lng:141.3506},
+      {id:'4-2',time:'11:00',name:'洞爺湖畔散策',icon:'🏔️',type:'spot',color:'#639922',bg:'#EAF3DE',tags:['火山','湖景','拍照'],note:'洞爺湖為火山口湖，周長43km，湖中有中島・大島等4個小島',lat:42.5831,lng:140.8019},
+      {id:'4-3',time:'12:00',name:'午餐',icon:'🍱',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['湖畔餐廳'],note:'洞爺湖溫泉街附近餐廳，注意五辛限制',lat:42.5731,lng:140.8119},
+      {id:'4-4',time:'13:00',name:'昭和新山',icon:'🌋',type:'spot',color:'#639922',bg:'#EAF3DE',tags:['活火山','熊牧場'],note:'1944年噴發形成，日本最年輕的山。旁邊有熊牧場可參觀',lat:42.5397,lng:140.8597},
+      {id:'4-5',time:'14:30',name:'洞爺湖遊覧船',icon:'⛵',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['遊船','中島'],note:'約50分鐘環湖，可看火山全景與湖中小島',lat:42.5827,lng:140.8041},
+      {id:'4-6',time:'17:00',name:'返回札幌',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['JR回程'],note:'JR洞爺站搭車回札幌，約1.5小時',lat:42.5831,lng:140.8019},
+    ]
+  },
+  {
+    id:5, date:'2025-07-17', label:'D5', title:'朝里看海・琴似購物', emoji:'🌊',
+    city:'Sapporo', lat:43.1456, lng:141.1591,
+    transport:{icon:'🚆', line:'JR 普通列車', detail:'札幌→朝里 (普通車才停，約40分)'},
+    stops:[
+      {id:'5-1',time:'09:30',name:'JR 朝里站・月台拍海',icon:'🌊',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['月台看海','彩色小屋'],note:'注意搭「普通車」才停朝里站！錢函站過後右邊就是絕美海景',lat:43.1456,lng:141.1591},
+      {id:'5-2',time:'10:00',name:'朝里神社',icon:'⛩️',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['參拜'],note:'月台附近步行可達，無人站用月台感應柱嗶Suica',lat:43.1468,lng:141.1603},
+      {id:'5-3',time:'10:20',name:'海邊彩色小屋拍照',icon:'📸',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['打卡','IG'],note:'朝里川河口附近有著名彩色漁業小屋，光線好非常上相',lat:43.1442,lng:141.1576},
+      {id:'5-4',time:'11:34',name:'搭車往琴似',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['2號月台','普通車','22分'],note:'朝里站2號月台往「江別/札幌」方向普通車，在琴似下車',lat:43.1456,lng:141.1591},
+      {id:'5-5',time:'12:00',name:'琴似紅磚館・神社',icon:'🏛️',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['紅磚館','琴似神社'],note:'琴似榮町通散步→拍紅磚館→參拜琴似神社',lat:43.0741,lng:141.2938},
+      {id:'5-6',time:'13:45',name:'AEON 琴似店',icon:'🛒',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['快閃','地鐵琴似站旁'],note:'地鐵東西線琴似站2號出口旁，快閃逛完往北走回伊藤洋華堂',lat:43.0731,lng:141.2921},
+      {id:'5-7',time:'15:00',name:'伊藤洋華堂 琴似店',icon:'🏬',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['3小時','退稅','Seven Premium'],note:'北海道水果・Seven Premium零食・退稅17:15帶護照至服務台',lat:43.0748,lng:141.2957},
+      {id:'5-8',time:'17:55',name:'琴似站搭車回札幌',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['JR','5分鐘'],note:'JR琴似站→札幌站，普通車或快速皆可，約5分鐘',lat:43.0741,lng:141.2938},
+    ]
+  },
+  {
+    id:6, date:'2025-07-18', label:'D6', title:'富良野・富田薰衣草', emoji:'💜',
+    city:'Furano', lat:43.3628, lng:142.2833,
+    transport:{icon:'🚆', line:'札幌 → 富良野', detail:'JR富良野線・約2小時'},
+    stops:[
+      {id:'6-1',time:'08:00',name:'JR 札幌出發',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['富良野線'],note:'搭往旭川方向，滝川換乘富良野線，確認時刻表',lat:43.0682,lng:141.3506},
+      {id:'6-2',time:'10:00',name:'富田農場 花田散策',icon:'💜',type:'spot',color:'#7F77DD',bg:'#EEEDFE',tags:['薰衣草','七彩花田','拍照'],note:'7月盛開！主花田→倂作花田→彩色花田，帶好相機',lat:43.3628,lng:142.2822},
+      {id:'6-3',time:'11:00',name:'薰衣草霜淇淋',icon:'🍦',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['紫色','限定'],note:'農場內販売所，薰衣草・哈密瓜各種口味霜淇淋',lat:43.3628,lng:142.2822},
+      {id:'6-4',time:'12:00',name:'農場午餐',icon:'🍱',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['農場料理'],note:'農場餐廳，富良野當地蔬菜料理，注意五辛問題',lat:43.3628,lng:142.2822},
+      {id:'6-5',time:'13:30',name:'薰衣草收割體驗',icon:'✂️',type:'spot',color:'#7F77DD',bg:'#EEEDFE',tags:['7月限定','每人50朵'],note:'7月期間每人可免費收割50朵薰衣草帶回家！',lat:43.3628,lng:142.2833},
+      {id:'6-6',time:'15:00',name:'伴手禮購物',icon:'🎁',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['薰衣草商品','精油'],note:'農場直售店購買薰衣草精油・乾燥花・各種薰衣草商品',lat:43.3628,lng:142.2822},
+      {id:'6-7',time:'16:00',name:'返回札幌',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['富良野線','2小時'],note:'富良野站搭車返回，注意末班車時間',lat:43.3481,lng:142.3833},
+    ]
+  },
+  {
+    id:7, date:'2025-07-19', label:'D7', title:'自由行・緩衝日', emoji:'✨',
+    city:'Sapporo', lat:43.0682, lng:141.3506,
+    transport:{icon:'🚇', line:'地鐵 Suica', detail:'自由移動'},
+    stops:[
+      {id:'7-1',time:'09:00',name:'自由早晨',icon:'☕',type:'food',color:'#BA7517',bg:'#FAEEDA',tags:['補眠','咖啡廳'],note:'可在飯店附近找個咖啡廳享用悠閒早餐',lat:43.0682,lng:141.3506},
+      {id:'7-2',time:'10:00',name:'羊之丘展望台（備選）',icon:'🐑',type:'spot',color:'#639922',bg:'#EAF3DE',tags:['薰衣草','克拉克博士','收割體驗'],note:'地鐵東豐線→福住站→巴士15分。9:00-18:00・入場1000円・7月薰衣草收割體驗',lat:43.0069,lng:141.4147},
+      {id:'7-3',time:'12:00',name:'大通公園散步',icon:'🌳',type:'spot',color:'#639922',bg:'#EAF3DE',tags:['公園','噴水','拍照'],note:'大通公園1-12丁目，夏天有玉米攤和啤酒花園',lat:43.0604,lng:141.3530},
+      {id:'7-4',time:'14:00',name:'狸小路補逛',icon:'🛍️',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['藥妝','最後掃貨'],note:'還沒買齊的藥妝・伴手禮，趁今天補足',lat:43.0602,lng:141.3521},
+      {id:'7-5',time:'18:00',name:'行李整理・打包',icon:'🧳',type:'spot',color:'#378ADD',bg:'#E6F1FB',tags:['回程準備'],note:'確認所有戰利品，整理行李，明天13:05搭機場快速',lat:43.0689,lng:141.3485},
+    ]
+  },
+  {
+    id:8, date:'2025-07-20', label:'D8', title:'回台灣', emoji:'✈️',
+    city:'Sapporo', lat:43.0753, lng:141.3685,
+    transport:{icon:'✈️', line:'新千歲機場 → 桃園', detail:'16:10 起飛 · 19:15 抵台'},
+    stops:[
+      {id:'8-1',time:'09:00',name:'飯店出發',icon:'🏨',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['東豐線側入口'],note:'走至地鐵「札幌站」東豐線側入口，找藍色東豐線標誌',lat:43.0689,lng:141.3485},
+      {id:'8-2',time:'09:20',name:'札幌諏訪神社',icon:'⛩️',type:'shrine',color:'#7F77DD',bg:'#EEEDFE',tags:['花手水','雪妖精御守','透明御朱印'],note:'北13條東站1號出口走3分鐘。花手水・雪妖精御守・透明御朱印，最後一間神社！',lat:43.0753,lng:141.3685},
+      {id:'8-3',time:'10:30',name:'車站最後購物',icon:'🛍️',type:'shop',color:'#D4537E',bg:'#FBEAF0',tags:['UNIQLO','大丸','最後掃貨'],note:'大丸百貨・UNIQLO・GU最後採購，10:30剛開門最不用排隊',lat:43.0677,lng:141.3494},
+      {id:'8-4',time:'12:15',name:'回飯店取行李',icon:'🧳',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['東改札口最近'],note:'大丸→JR札幌站東改札口→北口出→京急EX Hotel，取大行李',lat:43.0689,lng:141.3485},
+      {id:'8-5',time:'13:05',name:'JR 快速 Airport 號',icon:'🚆',type:'transport',color:'#1D9E75',bg:'#E1F5EE',tags:['u-seat','4號車廂','行李架'],note:'東改札口進站→找5/6號月台→4號車廂(u-seat)→大行李放車門行李架',lat:43.0682,lng:141.3506},
+      {id:'8-6',time:'14:10',name:'新千歲機場報到',icon:'✈️',type:'transport',color:'#378ADD',bg:'#E6F1FB',tags:['1航站','報到','安檢'],note:'16:10起飛，提前2小時辦理，桃園2航站降落約19:15',lat:42.7752,lng:141.6927},
+    ]
+  }
+]
+
+// ═══════════════════════════════════════
+// TRANSPORT DATA
+// ═══════════════════════════════════════
+const TRANSPORT_DATA = {
+  1: [{
+    label:'D1', route:'新千歲空港 → 札幌', line:'JR 快速 Airport 號',
+    times:['13:47','14:00','14:12','14:24','14:36'],
+    recommended:'14:00',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=新千歲空港&destination=札幌駅&travelmode=transit',
+    steps:[
+      {text:'領完行李，跟著藍色「JR Train」指標走到 B1'},
+      {text:'找「指定席售票機」（紫色）買指定席券 840円/人', warn:'刷西瓜卡進站，再插入指定席紙票'},
+      {text:'搭快速 Airport 號，找第 4 節車廂（u-seat）'},
+      {text:'車程約 37 分，抵達札幌站西改札口出站', warn:'紙本指定席券不投入改札機，手機嗶 Suica 出站'},
+    ]
+  }],
+  2: [{
+    label:'D2', route:'札幌 → 圓山公園', line:'地鐵南北線 + 東西線',
+    times:['09:00','09:12','09:24'],
+    recommended:'09:00',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=円山公園駅&travelmode=transit',
+    steps:[
+      {text:'從飯店北口進入地鐵札幌站，找南北線 1 號月台'},
+      {text:'搭 1 站到「大通站」下車，跟橙色指標下樓轉東西線'},
+      {text:'東西線 4 號月台，搭 3 站到「圓山公園站」', note:'嗶 Suica 感應'},
+      {text:'找 3 號出口（有電梯）出站，直走進圓山公園'},
+    ]
+  }],
+  3: [{
+    label:'D3 去程', route:'札幌 → 南小樽', line:'JR 快速 Airport 號',
+    times:['09:03','09:15','09:27','09:39'],
+    recommended:'09:15',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=南小樽駅&travelmode=transit',
+    steps:[
+      {text:'JR 札幌站 2 或 3 號月台，找往「小樽」方向快速 Airport'},
+      {text:'持 u-seat 指定席，坐 1A/1B（右側靠海）', note:'小樽築港站過後右手邊就是海景'},
+      {text:'28-32 分後抵達南小樽站，嗶 Suica 出站'},
+    ]
+  },{
+    label:'D3 回程', route:'小樽 → 札幌', line:'JR 快速 Airport 號',
+    times:['13:02','13:27','13:50','14:13'],
+    recommended:'13:27',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=小樽駅&destination=札幌駅&travelmode=transit',
+    steps:[
+      {text:'從小樽運河沿中央通微上坡走 10 分鐘到 JR 小樽站'},
+      {text:'持 u-seat 指定席，坐 1C/1D（左側靠海）', warn:'確認班次，快速 Airport 才停小樽站'},
+      {text:'約 32 分後抵達札幌，嗶 Suica 出站'},
+    ]
+  }],
+  4: [{
+    label:'D4 去程', route:'札幌 → 洞爺', line:'JR 特急スーパー北斗',
+    times:['08:00','09:00','10:00'],
+    recommended:'09:00',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=洞爺駅&travelmode=transit',
+    steps:[
+      {text:'JR 札幌站搭特急「スーパー北斗」往函館方向'},
+      {text:'約 1 小時 20 分後在「洞爺站」下車', warn:'需購買特急自由席或指定席票'},
+      {text:'洞爺站前有巴士或計程車往洞爺湖溫泉街（約 15 分）'},
+    ]
+  }],
+  5: [{
+    label:'D5', route:'札幌 → 朝里', line:'JR 函館本線（普通車）',
+    times:['09:05','09:30','09:58','10:25'],
+    recommended:'09:30',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=朝里駅&travelmode=transit',
+    steps:[
+      {text:'JR 札幌站 2、3 或 5 號月台，確認「普通 (Local)」車種', warn:'⚠️ 快速或區間快速不停朝里站！只搭普通車'},
+      {text:'車程約 40 分，錢函站過後右手邊就是海景，準備下車'},
+      {text:'朝里站是無人站，下車前在月台黃色感應柱嗶 Suica', warn:'⚠️ 這站沒有人工閘門，一定要感應柱嗶卡'},
+    ]
+  }],
+  6: [{
+    label:'D6', route:'札幌 → 富良野', line:'JR 富良野線',
+    times:['07:48','08:48','09:48'],
+    recommended:'08:48',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=富良野駅&travelmode=transit',
+    steps:[
+      {text:'JR 札幌站搭往旭川方向，在「滝川站」換乘富良野線'},
+      {text:'富良野線班次少，確認時刻表，車程共約 2 小時'},
+      {text:'富良野站下車，搭計程車或自行車到富田農場（約 10 分）', note:'農場距富良野站約 3km，可租腳踏車'},
+    ]
+  }],
+  8: [{
+    label:'D8', route:'札幌 → 新千歲空港', line:'JR 快速 Airport 號',
+    times:['12:00','12:24','12:48','13:05'],
+    recommended:'13:05',
+    gmaps:'https://www.google.com/maps/dir/?api=1&origin=札幌駅&destination=新千歲空港&travelmode=transit',
+    steps:[
+      {text:'從飯店取行李後，進 JR 札幌站東改札口'},
+      {text:'找 5 或 6 號月台，搭快速 Airport 號，第 4 節車廂（u-seat）', note:'行李放車門旁大行李架'},
+      {text:'車程 37 分，抵達新千歲空港站', warn:'預留至少 2 小時辦理報到＋安檢，建議搭 13:05'},
+    ]
+  }]
+}
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let state = {
+  currentDayId: 1,
+  currentScreen: 'itinerary',
+  checked: {},
+  txChecked: {},
+  customStops: {},
+  stopOrder: {},
+  aiHistory: [],
+  apiKey: null,
+  googleKey: null,
+  weatherCache: {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('hk2025-v2')
+    if (saved) Object.assign(state, JSON.parse(saved))
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('hk2025-v2', JSON.stringify(state))
+  } catch(e) {}
+}
+
+function getCurrentDay() {
+  const today = new Date()
+  const tripStart = new Date('2025-07-13')
+  const tripEnd = new Date('2025-07-20')
+  if (today >= tripStart && today <= tripEnd) {
+    const diff = Math.floor((today - tripStart) / 86400000)
+    return Math.min(diff + 1, 8)
+  }
+  return 1
+}
+
+function getDay(id) {
+  return DAYS.find(d => d.id === id)
+}
+
+function getStops(day) {
+  const custom = state.customStops[day.id] || []
+  const deletedIds = new Set(custom.filter(s=>s.deleted).map(s=>s.id))
+  const editedMap = {}
+  custom.filter(s=>!s.deleted&&day.stops.find(o=>o.id===s.id)).forEach(s=>editedMap[s.id]=s)
+  const newCustom = custom.filter(s=>!s.deleted&&!day.stops.find(o=>o.id===s.id))
+  const base = [
+    ...day.stops.filter(s=>!deletedIds.has(s.id)).map(s=>editedMap[s.id]||s),
+    ...newCustom
+  ]
+  // Apply custom order if exists
+  const order = state.stopOrder[day.id]
+  if (order && order.length) {
+    const ordered = []
+    order.forEach(id => { const s=base.find(s=>s.id===id); if(s) ordered.push(s) })
+    base.forEach(s => { if(!order.includes(s.id)) ordered.push(s) })
+    return ordered
+  }
+  return base
+}
+
+// ═══════════════════════════════════════
+// WEATHER
+// ═══════════════════════════════════════
+const WX_CODES = {
+  0:'☀️', 1:'🌤️', 2:'⛅', 3:'☁️',
+  45:'🌫️', 48:'🌫️',
+  51:'🌦️', 53:'🌦️', 55:'🌧️',
+  61:'🌧️', 63:'🌧️', 65:'🌧️',
+  71:'❄️', 73:'❄️', 75:'❄️',
+  77:'🌨️',
+  80:'🌦️', 81:'🌧️', 82:'⛈️',
+  95:'⛈️', 96:'⛈️', 99:'⛈️'
+}
+
+const WX_DESC = {
+  0:'晴天', 1:'大致晴朗', 2:'多雲', 3:'陰天',
+  45:'霧', 48:'霧霜', 51:'小毛雨', 53:'毛毛雨', 55:'濃毛雨',
+  61:'小雨', 63:'中雨', 65:'大雨',
+  71:'小雪', 73:'中雪', 75:'大雪', 77:'雪霰',
+  80:'陣雨', 81:'大陣雨', 82:'強陣雨',
+  95:'雷雨', 96:'雷雨夾冰雹', 99:'強雷雨'
+}
+
+
+async function fetchWeather(day) {
+  const cacheKey = `wx-${day.id}`
+  if (state.weatherCache[cacheKey]) return state.weatherCache[cacheKey]
+
+  // Always try real GPS first
+  const gps = await getGPS()
+  const lat = gps ? gps.lat : day.lat
+  const lng = gps ? gps.lng : day.lng
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Asia/Tokyo&forecast_days=7`
+  const r = await fetch(url)
+  const d = await r.json()
+
+  const tripDate = day.date
+  const dateIdx = (d.daily.time || []).findIndex(t => t === tripDate)
+  const idx = dateIdx >= 0 ? dateIdx : 0
+
+  const result = {
+    max: Math.round(d.daily.temperature_2m_max[idx]),
+    min: Math.round(d.daily.temperature_2m_min[idx]),
+    rain: d.daily.precipitation_probability_max[idx],
+    code: d.daily.weathercode[idx],
+    usingGPS: !!gps
+  }
+  state.weatherCache[cacheKey] = result
+  saveState()
+  return result
+}
+
+function renderWeather(day) {
+  const card = document.createElement('div')
+  card.className = 'wx-card'
+  card.id = `wx-${day.id}`
+  card.innerHTML = `<div class="wx-loading">⏳ 取得位置與天氣中…</div>`
+  
+  fetchWeather(day).then(wx => {
+    if (!wx) return
+    const emoji = WX_CODES[wx.code] || '🌡️'
+    const desc = WX_DESC[wx.code] || ''
+    const locLabel = wx.usingGPS ? '📍 目前位置' : `📍 ${day.city}`
+    const warnHtml = wx.rain >= 50 ? `<div class="wx-warn">⚠️ 降雨機率 ${wx.rain}%，建議攜帶雨具</div>` : ''
+    card.innerHTML = `
+      <div class="wx-row" onclick="toggleWeather(this)" style="cursor:pointer">
+        <div class="wx-emoji">${emoji}</div>
+        <div class="wx-info">
+          <div class="wx-loc">${locLabel} · ${day.date.slice(5).replace('-','/')}</div>
+          <div class="wx-temp-row">
+            <div class="wx-temp">${wx.max}°C</div>
+            <div class="wx-range">↓${wx.min}°C</div>
+            <div class="wx-desc" style="margin-left:6px;font-size:11px;color:var(--text2)">${desc}</div>
+          </div>
+        </div>
+        <div class="wx-toggle" style="font-size:13px;color:var(--text3);flex-shrink:0;transition:transform .2s">▾</div>
+      </div>
+      <div class="wx-detail">
+        <div class="wx-pills">
+          <span class="wx-pill">💧 ${wx.rain}%</span>
+          <span class="wx-pill">${emoji} ${desc}</span>
+        </div>
+        ${warnHtml}
+      </div>
+    `
+  }).catch(() => {
+    card.innerHTML = `<div class="wx-loading">天氣資訊需要網路連線</div>`
+  })
+  
+  return card
+}
+
+function toggleWeather(row) {
+  const detail = row.nextElementSibling
+  const arrow = row.querySelector('.wx-toggle')
+  const collapsed = detail.style.display === 'none'
+  detail.style.display = collapsed ? '' : 'none'
+  if (arrow) arrow.style.transform = collapsed ? '' : 'rotate(-90deg)'
+}
+
+// ═══════════════════════════════════════
+// MAP — Google Maps JavaScript API
+// ═══════════════════════════════════════
+let currentMapTab = 'stops'
+let nearbyRadius = 400
+let mapFilter = new Set(['shrine','spot','shop','food','nature'])
+let searchedLat = null, searchedLng = null
+
+// Google Maps state
+let gmap = null
+let gmapMarkers = []
+let gmapUserMarker = null
+let placesService = null
+let gpsWatchId = null
+let isTracking = false
+let currentGPS = null
+let hiddenStops = new Set()
+let nearbyModeActive = false
+let nearbyTypeFilter = new Set(['food','cafe','shop','transit'])
+
+// ── Google Maps loading ──
+function loadGoogleMaps(key) {
+  if (window.google && window.google.maps) { onGoogleMapsReady(); return }
+  const s = document.createElement('script')
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=onGoogleMapsReady&language=zh-TW`
+  s.async = true; s.defer = true
+  document.head.appendChild(s)
+}
+
+window.onGoogleMapsReady = function() {
+  if (state.currentScreen === 'map') initMap(getDay(state.currentDayId))
+}
+
+function saveAllKeys() {
+  const aiKey = document.getElementById('key-input').value.trim()
+  const gKey = document.getElementById('gkey-input').value.trim()
+  if (aiKey) state.apiKey = aiKey
+  if (gKey) { state.googleKey = gKey; loadGoogleMaps(gKey) }
+  saveState()
+  closeKeyModal()
+  const messagesEl = document.getElementById('chat-messages')
+  if(messagesEl) messagesEl.innerHTML = ''
+  initAIChat()
+}
+
+// ── GPS Tracking ──
+function toggleTracking() {
+  if (isTracking) stopTracking()
+  else startTracking()
+}
+
+function startTracking() {
+  if (!navigator.geolocation) return
+  isTracking = true
+  const btn = document.getElementById('gps-track-btn')
+  if (btn) { btn.className='gps-btn track-on'; btn.innerHTML='<span class="pulse-dot"></span>追蹤中' }
+  gpsWatchId = navigator.geolocation.watchPosition(onPositionUpdate, null, {enableHighAccuracy:true, maximumAge:20000, timeout:10000})
+}
+
+function stopTracking() {
+  if (gpsWatchId) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null }
+  isTracking = false
+  const btn = document.getElementById('gps-track-btn')
+  if (btn) { btn.className='gps-btn'; btn.textContent='📍 定位' }
+}
+
+function onPositionUpdate(pos) {
+  const newPos = {lat: pos.coords.latitude, lng: pos.coords.longitude}
+  const moved = currentGPS ? haversine(currentGPS.lat,currentGPS.lng,newPos.lat,newPos.lng) : 999
+  currentGPS = newPos
+  if (gmap) {
+    const latlng = new google.maps.LatLng(currentGPS.lat, currentGPS.lng)
+    if (gmapUserMarker) {
+      gmapUserMarker.setPosition(latlng)
+    } else {
+      gmapUserMarker = new google.maps.Marker({
+        position: latlng, map: gmap, zIndex: 999,
+        icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor:'#4285F4', fillOpacity:1, strokeColor:'white', strokeWeight:2 }
+      })
+    }
+  }
+  if (moved > 25) {
+    const day = getDay(state.currentDayId)
+    const stops = getStops(day)
+    updateNextBanner(stops)
+    renderMapStopList(stops)
+    refreshMarkerIcons(stops)
+  }
+  if (moved > 150) fetchNearbyPlaces(newPos.lat, newPos.lng)
+}
+
+// ── Utility ──
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2
+  return Math.round(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)))
+}
+function distLabel(m){ return m<1000?`${m}m`:`${(m/1000).toFixed(1)}km` }
+function walkLabel(m){
+  const mins=Math.max(1,Math.round(m/80))
+  if(m<300) return `約${mins}分鐘，輕鬆步行`
+  if(m<800) return `約${mins}分鐘步行`
+  if(m<1500) return `約${mins}分鐘，需要走一段路`
+  return `約${mins}分鐘，建議搭車`
+}
+function walkMins(m){ return Math.max(1,Math.round(m/80)) }
+function gmapsNavUrl(lat,lng){ return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking` }
+function findNextStop(stops){
+  const undone=stops.filter(s=>!state.checked[s.id]&&s.lat&&s.lng)
+  if(!undone.length) return null
+  if(!currentGPS) return undone[0]
+  return undone.sort((a,b)=>haversine(currentGPS.lat,currentGPS.lng,a.lat,a.lng)-haversine(currentGPS.lat,currentGPS.lng,b.lat,b.lng))[0]
+}
+
+// ── Tab switching ──
+function switchMapTab(tab) {
+  currentMapTab = tab
+  document.querySelectorAll('.map-tab').forEach(t=>t.classList.toggle('on',t.id===`mtab-${tab}`))
+  document.querySelectorAll('.map-tab-panel').forEach(p=>p.classList.toggle('active',p.id===`mpanel-${tab}`))
+}
+
+function setNearbyRange(r) {
+  nearbyRadius = r
+  document.querySelectorAll('.range-btn').forEach(b=>{
+    const val=b.textContent==='1km'?1000:parseInt(b.textContent)
+    b.classList.toggle('on',val===r)
+  })
+  if(currentGPS) fetchNearbyPlaces(currentGPS.lat, currentGPS.lng)
+}
+
+// ── Map filter ──
+function setMapFilter(type) {
+  const allTypes=['shrine','spot','shop','food','nature','transport']
+  if(type==='all'){
+    mapFilter = mapFilter.size===allTypes.length ? new Set(['shrine','spot','shop','food','nature']) : new Set(allTypes)
+  } else {
+    if(mapFilter.has(type)) mapFilter.delete(type); else mapFilter.add(type)
+  }
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    const m=b.getAttribute('onclick')?.match(/setMapFilter\('(\w+)'\)/); if(!m) return
+    const t=m[1]; b.classList.toggle('on', t==='all' ? mapFilter.size>0 : mapFilter.has(t))
+  })
+  // Show/hide markers
+  const day=getDay(state.currentDayId)
+  const stops=getStops(day).filter(s=>s.lat&&s.lng)
+  gmapMarkers.forEach((marker,i)=>{
+    const stop=stops[i]; if(!stop) return
+    const stype=stop.type||'spot'
+    const inFilter=mapFilter.size===0||mapFilter.has(stype)
+    const inRange=!nearbyModeActive||!currentGPS||haversine(currentGPS.lat,currentGPS.lng,stop.lat,stop.lng)<=1500
+    marker.setVisible(inFilter && inRange && !hiddenStops.has(stop.id))
+  })
+}
+
+// ── Marker icon helper ──
+function makeMarkerIcon(stop, isNext, isDone) {
+  const typeColors = {shrine:'#7F77DD',shop:'#D4537E',food:'#BA7517',spot:'#378ADD',transport:'#1D9E75',nature:'#639922'}
+  const color = typeColors[stop.type||'spot'] || '#378ADD'
+  const opacity = isDone ? 0.4 : 1
+  const border = isNext ? '#1D9E75' : 'white'
+  const bw = isNext ? 3 : 2
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="${color}" opacity="${opacity}" stroke="${border}" stroke-width="${bw}"/><text y="25" x="20" text-anchor="middle" font-size="16">${stop.icon}</text></svg>`)}`,
+    scaledSize: new google.maps.Size(40, 40),
+    anchor: new google.maps.Point(20, 20)
+  }
+}
+
+// ── Refresh marker icons (after check/uncheck) ──
+function refreshMarkerIcons(stops) {
+  if (!gmap || !window.google) return
+  const visibleStops = stops.filter(s=>s.lat&&s.lng)
+  const nextStop = findNextStop(visibleStops)
+  gmapMarkers.forEach((marker,i)=>{
+    const stop = visibleStops[i]; if(!stop) return
+    marker.setIcon(makeMarkerIcon(stop, stop.id===nextStop?.id, !!state.checked[stop.id]))
+  })
+}
+
+// ── Google Places nearby search ──
+function fetchNearbyPlaces(lat, lng) {
+  if (!placesService || !window.google) return
+  const listEl = document.getElementById('nearby-list')
+  if (listEl) listEl.innerHTML = '<div class="nearby-empty">🔍 搜尋附近好去處…</div>'
+
+  // Build search types based on filter
+  const typeMap = {
+    food: ['restaurant'],
+    cafe: ['cafe', 'bakery'],
+    shop: ['convenience_store', 'shopping_mall', 'store'],
+    transit: ['transit_station', 'subway_station', 'train_station', 'bus_station']
+  }
+  const activeTypes = nearbyTypeFilter.size > 0
+    ? [...nearbyTypeFilter].flatMap(t=>typeMap[t]||[])
+    : Object.values(typeMap).flat()
+
+  const allResults = []
+  let pending = activeTypes.length
+  if(!pending){ if(listEl) listEl.innerHTML='<div class="nearby-empty">請選擇至少一個分類</div>'; return }
+
+  activeTypes.forEach(type=>{
+    placesService.nearbySearch({
+      location:{lat,lng}, radius:nearbyRadius, type, language:'zh-TW'
+    },(results,status)=>{
+      if(status===google.maps.places.PlacesServiceStatus.OK && results){
+        results.forEach(r=>{ if(!allResults.find(x=>x.place_id===r.place_id)) allResults.push(r) })
+      }
+      pending--
+      if(pending===0) renderNearbyPlaces(allResults, lat, lng)
+    })
+  })
+}
+
+function renderNearbyPlaces(results, lat, lng) {
+  const el = document.getElementById('nearby-list')
+  const countEl = document.getElementById('nearby-count')
+  if (!el) return
+  const TRANSIT_TYPES = new Set(['transit_station','subway_station','train_station','bus_station'])
+  const sorted = results
+    .map(r=>({
+      name: r.name,
+      rating: r.rating,
+      reviewCount: r.user_ratings_total,
+      open: r.opening_hours?.open_now,
+      lat: r.geometry.location.lat(),
+      lng: r.geometry.location.lng(),
+      types: r.types,
+      isTransit: r.types.some(t=>TRANSIT_TYPES.has(t)),
+      dist: haversine(lat,lng,r.geometry.location.lat(),r.geometry.location.lng())
+    }))
+    .filter(r=>r.dist<=nearbyRadius+50)
+    .sort((a,b)=>{
+      // Transit stations first if transit filter is on
+      if(nearbyTypeFilter.has('transit')&&a.isTransit!==b.isTransit) return a.isTransit?-1:1
+      return a.dist-b.dist
+    })
+    .slice(0,12)
+
+  if(countEl) countEl.textContent = sorted.length ? `${sorted.length}個` : '無'
+  if(!sorted.length){ el.innerHTML='<div class="nearby-empty">附近暫無推薦</div>'; return }
+
+  const TYPE_ICON = {
+    restaurant:'🍜',cafe:'☕',bakery:'🥐',convenience_store:'🏪',
+    tourist_attraction:'⭐',shopping_mall:'🛍️',park:'🌳',
+    transit_station:'🚉',subway_station:'🚇',train_station:'🚆',bus_station:'🚌'
+  }
+
+  el.innerHTML = sorted.map(p=>{
+    const ic = p.types.map(t=>TYPE_ICON[t]).find(Boolean) || (p.isTransit?'🚉':'📍')
+    const stars = p.rating&&!p.isTransit ? `<span class="nearby-stars">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5-Math.round(p.rating))} ${p.rating.toFixed(1)}</span>` : ''
+    const reviews = p.reviewCount&&!p.isTransit ? `<span>(${p.reviewCount}則)</span>` : ''
+    const openStatus = p.isTransit ? '' : p.open===true ? `<span class="nearby-open">🟢 營業中</span>` : p.open===false ? `<span class="nearby-closed">🔴 休息中</span>` : ''
+    const transitStyle = p.isTransit ? 'border-left:3px solid #1D9E75;' : ''
+    return `<div class="nearby-row" style="${transitStyle}">
+      <div class="nearby-ic">${ic}</div>
+      <div class="nearby-inf">
+        <div class="nearby-name">${p.name}</div>
+        <div class="nearby-meta">${stars}${reviews}<span class="nearby-dist">📍${distLabel(p.dist)}</span><span>${walkLabel(p.dist)}</span>${openStatus}</div>
+      </div>
+      <div class="nearby-btns">
+        <button class="nearby-view" onclick="viewOnMap(${p.lat},${p.lng},'${p.name.replace(/'/g,"\\'")}','${p.isTransit?'🚉':ic}')">📍</button>
+        <a href="${gmapsNavUrl(p.lat,p.lng)}" target="_blank" class="nearby-nav">🗺️</a>
+      </div>
+    </div>`
+  }).join('')
+  updateBadges()
+}
+
+// ── Next stop banner ──
+function updateNextBanner(stops) {
+  const next = findNextStop(stops)
+  const nameEl=document.getElementById('next-stop-name')
+  const distEl=document.getElementById('next-stop-dist')
+  const goBtn=document.getElementById('next-go-btn')
+  if(!next){if(nameEl)nameEl.textContent='✅ 今日景點全部完成！';if(distEl)distEl.textContent='太棒了';return}
+  if(nameEl) nameEl.textContent=`${next.icon} ${next.name}`
+  if(distEl){
+    if(currentGPS){const m=haversine(currentGPS.lat,currentGPS.lng,next.lat,next.lng);distEl.textContent=`📍 ${distLabel(m)} · ${walkLabel(m)}`}
+    else distEl.textContent=`${next.time} · 開啟追蹤取得距離`
+  }
+  if(goBtn) goBtn.href=gmapsNavUrl(next.lat,next.lng)
+}
+
+// ── Map stop list ──
+function renderMapStopList(stops) {
+  const el=document.getElementById('map-stop-scroll'); if(!el) return
+  el.innerHTML=''
+  const nextStop=findNextStop(stops)
+  stops.forEach((stop,i)=>{
+    const isDone=!!state.checked[stop.id], isNext=stop.id===nextStop?.id
+    const isHidden=hiddenStops.has(stop.id)
+    const row=document.createElement('div')
+    row.className=`ms-row${isDone?' ms-done':''}${isNext?' ms-active':''}${isHidden?' ms-hidden':''}`
+    row.id=`ms-${stop.id}`
+    const numCls=isDone?'ms-ck':isNext?'ms-nxt':'', numTxt=isDone?'✓':isNext?'→':i+1
+    let distHtml=''
+    if(!isDone&&stop.lat&&stop.lng&&currentGPS){
+      const m=haversine(currentGPS.lat,currentGPS.lng,stop.lat,stop.lng)
+      distHtml=`<span class="ms-dist">📍${distLabel(m)}</span><span>${walkLabel(m)}</span>`
+    } else if(isDone) distHtml=`<span style="color:var(--teal)">已完成</span>`
+    row.innerHTML=`
+      <button class="eye-btn${isHidden?' hidden':''}" onclick="toggleStopVisibility('${stop.id}',event)">${isHidden?'🙈':'👁️'}</button>
+      <div class="ms-num ${numCls}">${numTxt}</div>
+      <div class="ms-ic" style="background:${stop.bg};opacity:${isHidden?'.4':'1'}">${stop.icon}</div>
+      <div class="ms-inf" style="opacity:${isHidden?'.4':'1'}">
+        <div class="ms-name">${stop.name}</div>
+        <div class="ms-meta"><span>${stop.time}</span>${distHtml}</div>
+      </div>
+      ${!isDone&&stop.lat?`
+      <div class="ms-btns">
+        <button class="ms-view" onclick="viewOnMap(${stop.lat},${stop.lng},'${stop.name.replace(/'/g,"\\'")}','${stop.icon}',event)">📍</button>
+        <a href="${gmapsNavUrl(stop.lat,stop.lng)}" target="_blank" class="ms-nav">🗺️</a>
+      </div>`:''}`
+    row.addEventListener('click',e=>{
+      if(e.target.closest('.eye-btn')||e.target.closest('.ms-nav')) return
+      if(gmap&&stop.lat&&stop.lng) gmap.panTo({lat:stop.lat,lng:stop.lng})
+    })
+    el.appendChild(row)
+  })
+}
+
+// ── 👁 Toggle stop visibility on map ──
+function toggleStopVisibility(stopId, e) {
+  e.stopPropagation()
+  if(hiddenStops.has(stopId)) hiddenStops.delete(stopId)
+  else hiddenStops.add(stopId)
+  // Update marker visibility
+  const day=getDay(state.currentDayId)
+  const stops=getStops(day).filter(s=>s.lat&&s.lng)
+  gmapMarkers.forEach((marker,i)=>{
+    const stop=stops[i]; if(!stop) return
+    const stype=stop.type||'spot'
+    marker.setVisible((mapFilter.size===0||mapFilter.has(stype))&&!hiddenStops.has(stop.id))
+  })
+  // Re-render list
+  renderMapStopList(stops)
+}
+
+// ── Nearby Mode ──
+function toggleNearbyMode() {
+  nearbyModeActive = !nearbyModeActive
+  const btn=document.getElementById('nearby-mode-btn')
+  if(btn){ btn.classList.toggle('active',nearbyModeActive); btn.textContent=nearbyModeActive?'🔍 附近模式':'📍 附近模式' }
+  if(nearbyModeActive && currentGPS && gmap) {
+    gmap.panTo({lat:currentGPS.lat, lng:currentGPS.lng})
+    gmap.setZoom(15)
+    // Hide markers far from current position (>1.5km)
+    const day=getDay(state.currentDayId)
+    const stops=getStops(day).filter(s=>s.lat&&s.lng)
+    gmapMarkers.forEach((marker,i)=>{
+      const stop=stops[i]; if(!stop) return
+      const dist=haversine(currentGPS.lat,currentGPS.lng,stop.lat,stop.lng)
+      const stype=stop.type||'spot'
+      marker.setVisible(dist<=1500&&(mapFilter.size===0||mapFilter.has(stype))&&!hiddenStops.has(stop.id))
+    })
+  } else if(!nearbyModeActive) {
+    // Restore all visible markers
+    const day=getDay(state.currentDayId)
+    const stops=getStops(day).filter(s=>s.lat&&s.lng)
+    gmapMarkers.forEach((marker,i)=>{
+      const stop=stops[i]; if(!stop) return
+      const stype=stop.type||'spot'
+      marker.setVisible((mapFilter.size===0||mapFilter.has(stype))&&!hiddenStops.has(stop.id))
+    })
+  }
+}
+
+// ── Nearby type filter ──
+function setNearbyType(type) {
+  if(type==='all'){
+    const all=new Set(['food','cafe','shop','transit'])
+    nearbyTypeFilter = nearbyTypeFilter.size===all.size ? new Set() : all
+  } else {
+    if(nearbyTypeFilter.has(type)) nearbyTypeFilter.delete(type)
+    else nearbyTypeFilter.add(type)
+  }
+  document.querySelectorAll('.nearby-type-btn').forEach(b=>{
+    const m=b.getAttribute('onclick')?.match(/setNearbyType\('(\w+)'\)/); if(!m) return
+    const t=m[1]
+    if(t==='all') b.classList.toggle('on',nearbyTypeFilter.size>0)
+    else b.classList.toggle('on',nearbyTypeFilter.has(t))
+  })
+  // Re-render with current results
+  if(currentGPS) fetchNearbyPlaces(currentGPS.lat,currentGPS.lng)
+}
+
+// ── focusMapStop ──
+function focusMapStop(stopId) {
+  switchMapTab('stops')
+  setTimeout(()=>{
+    const row=document.getElementById(`ms-${stopId}`)
+    if(row){row.scrollIntoView({behavior:'smooth',block:'center'});row.style.background='var(--teal-l)';setTimeout(()=>row.style.background='',1000)}
+  },60)
+}
+
+// ── View location on map (multiple temp markers) ──
+let tempMarkers = []
+
+function viewOnMap(lat, lng, name, icon, e) {
+  if(e) e.stopPropagation()
+  if(!gmap || !window.google) return
+
+  // Switch to stops tab and shrink sheet
+  switchMapTab('stops')
+  const sheet = document.getElementById('map-sheet')
+  if(sheet){ sheet.style.height = Math.round(window.innerHeight * 0.32) + 'px' }
+
+  // Add new purple marker (keep previous ones)
+  const marker = new google.maps.Marker({
+    position:{lat,lng}, map:gmap,
+    icon:{
+      url:`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="44" height="52" viewBox="0 0 44 52"><ellipse cx="22" cy="48" rx="8" ry="3" fill="rgba(0,0,0,.2)"/><circle cx="22" cy="22" r="20" fill="#9333ea" stroke="white" stroke-width="2.5"/><text y="28" x="22" text-anchor="middle" font-size="18">${icon}</text></svg>`)}`,
+      scaledSize:new google.maps.Size(44,52),
+      anchor:new google.maps.Point(22,48)
+    },
+    zIndex:1000, title:name, animation:google.maps.Animation.DROP
+  })
+  tempMarkers.push(marker)
+
+  // Show clear button
+  const clearBtn = document.getElementById('clear-markers-btn')
+  if(clearBtn) clearBtn.style.display = 'block'
+
+  // Pan map
+  gmap.panTo({lat,lng})
+  gmap.setZoom(16)
+
+  // Info window
+  const info = new google.maps.InfoWindow({
+    content:`<div style="font-size:13px;font-weight:600;padding:4px 2px">${icon} ${name}</div>`
+  })
+  info.open(gmap, marker)
+}
+
+function clearAllTempMarkers() {
+  tempMarkers.forEach(m=>m.setMap(null))
+  tempMarkers = []
+  const clearBtn = document.getElementById('clear-markers-btn')
+  if(clearBtn) clearBtn.style.display = 'none'
+}
+
+function viewNextOnMap() {
+  const day = getDay(state.currentDayId)
+  const stops = getStops(day).filter(s=>s.lat&&s.lng)
+  const next = findNextStop(stops)
+  if(next) viewOnMap(next.lat, next.lng, next.name, next.icon)
+}
+
+let sheetDragging = false
+let sheetStartY = 0
+let sheetStartH = 0
+let sheetListenersAdded = false
+const SHEET_MIN = 160
+const SHEET_MAX_RATIO = 0.68
+
+function initBottomSheet() {
+  const sheet = document.getElementById('map-sheet')
+  const handle = document.getElementById('map-sheet-handle')
+  if (!sheet || !handle) return
+
+  // Set initial height only if not already set
+  if (!sheet.style.height) {
+    sheet.style.height = Math.round(window.innerHeight * 0.38) + 'px'
+  }
+
+  // Only attach listeners once to prevent stacking
+  if (sheetListenersAdded) return
+  sheetListenersAdded = true
+
+  const onStart = (clientY) => {
+    sheetDragging = true
+    sheetStartY = clientY
+    sheetStartH = sheet.offsetHeight
+    sheet.style.transition = 'none'
+  }
+  const onMove = (clientY) => {
+    if (!sheetDragging) return
+    const dy = sheetStartY - clientY
+    const newH = Math.max(SHEET_MIN, Math.min(Math.round(window.innerHeight * SHEET_MAX_RATIO), sheetStartH + dy))
+    sheet.style.height = newH + 'px'
+    if (gmap) gmap.invalidateSize?.()
+  }
+  const onEnd = () => {
+    if (!sheetDragging) return
+    sheetDragging = false
+    sheet.style.transition = 'height .25s cubic-bezier(.32,.72,0,1)'
+    if (gmap) setTimeout(()=>gmap.invalidateSize?.(), 300)
+  }
+
+  handle.addEventListener('touchstart', e => onStart(e.touches[0].clientY), {passive:true})
+  window.addEventListener('touchmove', e => { if(sheetDragging) { e.preventDefault(); onMove(e.touches[0].clientY) } }, {passive:false})
+  window.addEventListener('touchend', onEnd)
+  handle.addEventListener('mousedown', e => onStart(e.clientY))
+  window.addEventListener('mousemove', e => { if(sheetDragging) onMove(e.clientY) })
+  window.addEventListener('mouseup', onEnd)
+}
+
+// ── Auto-scroll to current stop in itinerary ──
+function autoScrollToCurrentStop() {
+  const day = getDay(state.currentDayId)
+  if (!day) return
+  const stops = getStops(day)
+  const today = new Date().toISOString().slice(0,10)
+  if (day.date !== today) return  // only auto-scroll on trip days
+
+  // Find first unchecked stop
+  const target = stops.find(s => !state.checked[s.id])
+  if (!target) return
+
+  setTimeout(() => {
+    const el = document.getElementById(`stop-${target.id}`)
+    if (el) el.scrollIntoView({behavior:'smooth', block:'center'})
+  }, 300)
+}
+
+// ── goToday ──
+function goToday() {
+  const todayId=getCurrentDay(); renderItinerary(todayId); saveState(); updateBadges()
+}
+
+// ── Geocoding search (Nominatim fallback, Google if key available) ──
+async function searchPlace() {
+  const q=document.getElementById('search-input')?.value.trim(); if(!q) return
+  const btn=document.querySelector('.search-btn'); if(btn) btn.textContent='搜尋中…'
+  const resultsEl=document.getElementById('search-results')
+  if(state.googleKey && window.google && window.google.maps.places) {
+    const acService = new google.maps.places.AutocompleteService()
+    acService.getPlacePredictions({
+      input: q,
+      language: 'zh-TW'
+    },(predictions,status)=>{
+      if(btn) btn.textContent='搜尋'
+      if(status!=='OK'||!predictions?.length){
+        if(resultsEl){resultsEl.style.display='block';resultsEl.innerHTML='<div class="search-result-item" style="color:var(--text3)">找不到，請換個關鍵字</div>'}
+        return
+      }
+      if(resultsEl){
+        resultsEl.style.display='block'
+        resultsEl.innerHTML=predictions.slice(0,6).map(p=>`
+          <div class="search-result-item" onclick="resolvePlace('${p.place_id}','${(p.structured_formatting.main_text||'').replace(/'/g,"\\'")}')">
+            <div style="font-size:12px;font-weight:500">${p.structured_formatting.main_text||p.description}</div>
+            <div style="font-size:10px;color:var(--text3)">${p.structured_formatting.secondary_text||''}</div>
+          </div>`).join('')
+      }
+    })
+  } else {
+    // Nominatim fallback
+    try{
+      const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+' Japan')}&format=json&limit=5`,{headers:{'Accept-Language':'zh-TW,ja'}})
+      const data=await res.json()
+      if(btn) btn.textContent='搜尋'
+      if(!data.length){if(resultsEl){resultsEl.style.display='block';resultsEl.innerHTML='<div class="search-result-item" style="color:var(--text3)">找不到，請換個關鍵字</div>'}; return}
+      if(resultsEl){
+        resultsEl.style.display='block'
+        resultsEl.innerHTML=data.map(r=>{const parts=r.display_name.split(',');return `<div class="search-result-item" onclick="selectPlace(${r.lat},${r.lon},'${parts[0].trim().replace(/'/g,"\\'")}')"><div style="font-size:12px;font-weight:500">${parts[0].trim()}</div><div style="font-size:10px;color:var(--text3)">${parts.slice(1,3).join(',').trim()}</div></div>`}).join('')
+      }
+    }catch(e){if(btn) btn.textContent='搜尋'}
+  }
+}
+
+function resolvePlace(placeId, name) {
+  if(!placesService) return
+  placesService.getDetails({placeId, fields:['geometry','name']},(result,status)=>{
+    if(status==='OK'){selectPlace(result.geometry.location.lat(),result.geometry.location.lng(),name||result.name)}
+  })
+}
+
+function selectPlace(lat,lng,name){
+  searchedLat=parseFloat(lat); searchedLng=parseFloat(lng)
+  const nameEl=document.getElementById('edit-name'), siEl=document.getElementById('search-input'), resEl=document.getElementById('search-results')
+  if(nameEl) nameEl.value=name; if(siEl) siEl.value=name; if(resEl) resEl.style.display='none'
+}
+
+// ── Main map init ──
+function initMap(day) {
+  const mapEl = document.getElementById('google-map')
+  if (!mapEl) return
+  if (!state.googleKey) {
+    mapEl.innerHTML = `<div class="gmap-no-key"><div style="font-size:32px">🗺️</div><div>尚未設定 Google 地圖金鑰</div><div style="font-size:12px;color:var(--text3);margin-top:4px">設定後可使用 Google Maps・附近星級評分</div><button class="gmap-no-key-btn" onclick="showKeyModal()">⚙️ 設定 Google 地圖金鑰</button></div>`
+    const stops = getStops(day).filter(s=>s.lat&&s.lng)
+    updateNextBanner(stops)
+    renderMapStopList(stops)
+    startTracking()
+    initBottomSheet()
+  }
+  if (!window.google || !window.google.maps) { loadGoogleMaps(state.googleKey); return }
+  _initGoogleMapCore(day)
+}
+
+function _initGoogleMapCore(day) {
+  const stops = getStops(day).filter(s=>s.lat&&s.lng)
+  document.getElementById('map-title').textContent=`D${day.id} · ${day.title}`
+  document.getElementById('map-meta').textContent=`${stops.length} 個景點 · ${stops.filter(s=>state.checked[s.id]).length}/${stops.length} 完成`
+
+  // Clear old markers
+  gmapMarkers.forEach(m=>m.setMap(null)); gmapMarkers=[]
+  if(gmapUserMarker){gmapUserMarker.setMap(null);gmapUserMarker=null}
+
+  const mapEl = document.getElementById('google-map')
+  const visibleStops = stops.filter(s=>mapFilter.has(s.type||'spot'))
+  const center = visibleStops.length ? {lat:visibleStops[0].lat,lng:visibleStops[0].lng} : {lat:day.lat,lng:day.lng}
+
+  if (!gmap) {
+    gmap = new google.maps.Map(mapEl, {
+      center, zoom:14, mapTypeId:'roadmap',
+      fullscreenControl:false, streetViewControl:false,
+      mapTypeControl:false,
+      styles:[{featureType:'poi',elementType:'labels',stylers:[{visibility:'off'}]}]
+    })
+    placesService = new google.maps.places.PlacesService(gmap)
+  } else {
+    gmap.setCenter(center)
+    gmap.setZoom(14)
+  }
+
+  // Place markers
+  const nextStop = findNextStop(stops)
+  const bounds = new google.maps.LatLngBounds()
+  gmapMarkers = stops.map(stop=>{
+    const isDone=!!state.checked[stop.id], isNext=stop.id===nextStop?.id
+    const stype=stop.type||'spot'
+    const isHidden=hiddenStops.has(stop.id)
+    const marker = new google.maps.Marker({
+      position:{lat:stop.lat,lng:stop.lng}, map:gmap,
+      icon:makeMarkerIcon(stop,isNext,isDone),
+      title:stop.name,
+      visible:(mapFilter.size===0||mapFilter.has(stype)) && !isHidden
+    })
+    const infoWindow = new google.maps.InfoWindow({content:`
+      <div style="min-width:150px;padding:4px">
+        <div style="font-weight:600;font-size:13px">${stop.icon} ${stop.name}</div>
+        <div style="font-size:11px;color:#666;margin:4px 0">${stop.time}${isDone?' · ✓ 已完成':''}</div>
+        ${!isDone?`<a href="${gmapsNavUrl(stop.lat,stop.lng)}" target="_blank" style="display:inline-block;background:#4285F4;color:#fff;font-size:11px;padding:5px 12px;border-radius:6px;text-decoration:none;font-weight:600">Google 導航</a>`:'' }
+        <button onclick="focusMapStop('${stop.id}')" style="margin-left:4px;font-size:11px;background:#f5f5f5;border:1px solid #ddd;border-radius:6px;padding:4px 8px;cursor:pointer">↓ 清單</button>
+      </div>`
+    })
+    marker.addListener('click',()=>{ infoWindow.open(gmap,marker) })
+    if(mapFilter.has(stype)||mapFilter.size===0) bounds.extend({lat:stop.lat,lng:stop.lng})
+    return marker
+  })
+
+  // Fit bounds to visible non-transport stops
+  const boundsStops = stops.filter(s=>mapFilter.has(s.type||'spot')&&s.type!=='transport')
+  if (boundsStops.length > 0) {
+    const b = new google.maps.LatLngBounds()
+    boundsStops.forEach(s=>b.extend({lat:s.lat,lng:s.lng}))
+    gmap.fitBounds(b, {top:40,right:40,bottom:40,left:40})
+    if (boundsStops.length===1) gmap.setZoom(15)
+  }
+
+  updateNextBanner(stops)
+  renderMapStopList(stops)
+  startTracking()
+  if (currentGPS) fetchNearbyPlaces(currentGPS.lat, currentGPS.lng)
+  // Init draggable sheet
+  initBottomSheet()
+  if (gmap) setTimeout(()=>gmap.invalidateSize?.(), 100)
+}
+
+
+
+
+function switchMapTab(tab) {
+  currentMapTab = tab
+  document.querySelectorAll('.map-tab').forEach(t=>t.classList.toggle('on',t.id===`mtab-${tab}`))
+  document.querySelectorAll('.map-tab-panel').forEach(p=>p.classList.toggle('active',p.id===`mpanel-${tab}`))
+}
+
+function setNearbyRange(r) {
+  nearbyRadius = r
+  document.querySelectorAll('.range-btn').forEach(b=>{
+    const val=b.textContent==='1km'?1000:parseInt(b.textContent)
+    b.classList.toggle('on',val===r)
+  })
+  if(currentGPS){lastOverpassPos=null;fetchNearbyPOIs(currentGPS.lat,currentGPS.lng)}
+}
+
+function setMapFilter(type) {
+  const allTypes=['shrine','spot','shop','food','nature','transport']
+  if(type==='all'){
+    mapFilter = mapFilter.size===allTypes.length ? new Set(['shrine','spot','shop','food','nature']) : new Set(allTypes)
+  } else {
+    if(mapFilter.has(type)) mapFilter.delete(type)
+    else mapFilter.add(type)
+  }
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    const m=b.getAttribute('onclick')?.match(/setMapFilter\('(\w+)'\)/)
+    if(!m) return
+    const t=m[1]
+    if(t==='all') b.classList.toggle('on', mapFilter.size>0)
+    else b.classList.toggle('on', mapFilter.has(t))
+  })
+  const day=getDay(state.currentDayId)
+  const stops=getStops(day).filter(s=>s.lat&&s.lng)
+  stopMarkers.forEach((marker,i)=>{
+    const stop=stops[i]; if(!stop) return
+    const stype=stop.type||'spot'
+    if(mapFilter.has(stype)) { if(!lmap.hasLayer(marker)) marker.addTo(lmap) }
+    else { if(lmap.hasLayer(marker)) lmap.removeLayer(marker) }
+  })
+}
+
+function focusMapStop(stopId) {
+  switchMapTab('stops')
+  setTimeout(()=>{
+    const row=document.getElementById(`ms-${stopId}`)
+    if(row){ row.scrollIntoView({behavior:'smooth',block:'center'}); row.style.background='var(--teal-l)'; setTimeout(()=>row.style.background='',1000) }
+  },60)
+}
+
+
+// ═══════════════════════════════════════
+// RENDER ITINERARY
+// ═══════════════════════════════════════
+function renderItinerary(dayId) {
+  state.currentDayId = dayId
+  const day = getDay(dayId)
+  if (!day) return
+  
+  const todayDayId = getCurrentDay()
+  const dayNum = ['一','二','三','四','五','六','七','八'][dayId-1]
+  document.getElementById('cur-day-badge').textContent = `第${dayNum}天`
+  
+  // Today btn visibility
+  const todayBtn = document.getElementById('today-btn')
+  if (todayBtn) todayBtn.style.display = dayId !== todayDayId ? 'block' : 'none'
+  
+  // Update tabs — mark today
+  document.querySelectorAll('#day-tabs .dtab').forEach(t => {
+    const tid = parseInt(t.dataset.day)
+    t.classList.toggle('on', tid === dayId)
+    t.classList.toggle('today-tab', tid === todayDayId)
+  })
+  
+  const content = document.getElementById('itinerary-content')
+  content.innerHTML = ''
+  
+  content.appendChild(renderWeather(day))
+  
+  if (day.transport) {
+    const tx = document.createElement('div')
+    tx.className = 'tx-card'
+    tx.innerHTML = `
+      <div class="tx-icon">${day.transport.icon}</div>
+      <div class="tx-info">
+        <div class="tx-line">${day.transport.line}</div>
+        <div class="tx-detail">${day.transport.detail}</div>
+      </div>
+      <div class="tx-badge">交通卡（Suica）</div>
+    `
+    content.appendChild(tx)
+  }
+  
+  // Progress
+  const stops = getStops(day)
+  const done = stops.filter(s => state.checked[s.id]).length
+  const prog = document.createElement('div')
+  prog.className = 'prog-card'
+  prog.innerHTML = `
+    <div class="prog-row">
+      <span>今日進度</span>
+      <span class="prog-count" id="prog-text">${done} / ${stops.length} 完成</span>
+    </div>
+    <div class="prog-bar">
+      <div class="prog-fill" id="prog-fill" style="width:${stops.length?Math.round(done/stops.length*100):0}%"></div>
+    </div>
+  `
+  content.appendChild(prog)
+  
+  // Stop cards
+  stops.forEach(stop => {
+    content.appendChild(renderStopCard(stop))
+  })
+  autoScrollToCurrentStop()
+}
+
+function getTimeStatus(stop, dayId) {
+  const now = new Date()
+  const today = now.toISOString().slice(0,10)
+  const day = getDay(dayId)
+  if (!day || day.date !== today) return null
+  const [h,m] = (stop.time||'00:00').split(':').map(Number)
+  const stopMin = h*60+m
+  const nowMin = now.getHours()*60+now.getMinutes()
+  if (state.checked[stop.id]) return 'done'
+  if (nowMin < stopMin - 15) return 'upcoming'
+  if (nowMin >= stopMin - 15 && nowMin < stopMin + 30) return 'next'
+  if (nowMin >= stopMin + 30) return 'late'
+  return null
+}
+
+let isEditMode = false
+
+function renderStopCard(stop) {
+  const isDone = !!state.checked[stop.id]
+  const ts = getTimeStatus(stop, state.currentDayId)
+  const card = document.createElement('div')
+  let cardClass = `stop-card${isDone?' done':''}`
+  if (ts==='late'&&!isDone) cardClass+=' time-late'
+  if (ts==='next'&&!isDone) cardClass+=' time-next'
+  card.className = cardClass
+  card.id = `stop-${stop.id}`
+  card.dataset.stopId = stop.id
+
+  const hint = (stop.tags||[]).slice(0,3).join('・')
+  const navUrl = stop.lat&&stop.lng
+    ? `https://maps.google.com/maps?daddr=${stop.lat},${stop.lng}`
+    : `https://maps.google.com/maps?q=${encodeURIComponent(stop.name||'')}`
+
+  let timeStatusHtml = ''
+  if (ts==='late'&&!isDone) timeStatusHtml=`<div class="time-status ts-late"><div class="ts-dot" style="background:#E24B4A"></div>已超過預定時間</div>`
+  else if (ts==='next'&&!isDone) timeStatusHtml=`<div class="time-status ts-on-time"><div class="ts-dot" style="background:#1D9E75"></div>現在該去這裡了</div>`
+
+  const noteId = `note-${stop.id}`
+  const hasNote = !!stop.note
+  card.innerHTML = `
+    <div class="stop-head" onclick="toggleStopNote('${noteId}',this)">
+      <div class="stop-bar" style="background:${stop.color}"></div>
+      <div class="stop-ic" style="background:${stop.bg}">${stop.icon}</div>
+      <div class="stop-inf">
+        <div class="stop-time">${stop.time}</div>
+        <div class="stop-name">${stop.name}</div>
+        ${hint?`<div class="stop-hint">${hint}</div>`:''}
+        ${timeStatusHtml}
+      </div>
+      ${hasNote?`<div class="expand-arrow" id="arr-${noteId}">▼</div>`:''}
+      <button class="menu-btn" onclick="showActionSheet('${stop.id}',event)">編輯</button>
+      <button class="chk-btn${isDone?' on':''}" onclick="toggleCheck('${stop.id}',event)">✓</button>
+    </div>
+    ${hasNote?`
+    <div class="stop-body" id="${noteId}" style="display:none">
+      <div class="stop-body-inner">
+        <div class="stop-body-text">${stop.note}</div>
+        <a href="${navUrl}" target="_blank" class="nav-btn">🗺️</a>
+      </div>
+    </div>`:''}
+  `
+  return card
+}
+
+function toggleStopNote(id, headEl) {
+  const el = document.getElementById(id)
+  const arr = document.getElementById('arr-'+id)
+  if (!el) return
+  const isHidden = el.style.display === 'none' || el.style.display === ''
+  if (isHidden) {
+    el.style.display = 'block'
+    if(arr) arr.classList.add('open')
+  } else {
+    el.style.display = 'none'
+    if(arr) arr.classList.remove('open')
+  }
+}
+
+function toggleCheck(stopId, e) {
+  e.stopPropagation()
+  state.checked[stopId] = !state.checked[stopId]
+  saveState()
+  const card = document.getElementById(`stop-${stopId}`)
+  if (card) {
+    card.classList.toggle('done', state.checked[stopId])
+    const btn = card.querySelector('.chk-btn')
+    if (btn) { btn.classList.toggle('on', state.checked[stopId]); btn.classList.add('bounce'); setTimeout(()=>btn.classList.remove('bounce'),300) }
+  }
+  const day = getDay(state.currentDayId)
+  const stops = getStops(day)
+  const done = stops.filter(s=>state.checked[s.id]).length
+  const pct = stops.length?Math.round(done/stops.length*100):0
+  const fillEl=document.getElementById('prog-fill')
+  const textEl=document.getElementById('prog-text')
+  if(fillEl) fillEl.style.width=pct+'%'
+  if(textEl) textEl.textContent=`${done} / ${stops.length} 完成`
+  updateBadges()
+  // Instantly update map markers if map is visible
+  if (state.currentScreen === 'map' && window.google && gmap) {
+    refreshMarkerIcons(getStops(getDay(state.currentDayId)))
+  }
+}
+
+function updateProgress() {
+  const day = getDay(state.currentDayId)
+  const stops = getStops(day)
+  const done = stops.filter(s => state.checked[s.id]).length
+}
+
+// ═══════════════════════════════════════
+// ACTION SHEET & EDIT
+// ═══════════════════════════════════════
+let activeStopId = null
+const ICONS = ['⛩️','🛍️','🍱','📸','🚆','🏨','🌲','💜','⭐','🎫','🍡','🍮','🎂','🌋','⛵','🐑','✂️','🎁','🛒','🏬','☕','🌊','🏰']
+
+function showActionSheet(stopId, e) {
+  if (e) e.stopPropagation()
+  activeStopId = stopId
+  const day = getDay(state.currentDayId)
+  const stop = getStops(day).find(s => s.id === stopId)
+  if (!stop) return
+  document.getElementById('as-title').textContent = stop.name
+  document.getElementById('overlay').classList.add('show')
+  document.getElementById('action-sheet').classList.add('show')
+}
+
+function closeAll() {
+  document.getElementById('overlay').classList.remove('show')
+  document.getElementById('action-sheet').classList.remove('show')
+  document.getElementById('edit-modal').classList.remove('show')
+}
+
+function asEdit() {
+  closeAll()
+  const day = getDay(state.currentDayId)
+  const stop = getStops(day).find(s => s.id === activeStopId)
+  if (!stop) return
+  
+  document.getElementById('modal-title').textContent = '編輯景點'
+  document.getElementById('edit-time').value = stop.time || ''
+  document.getElementById('edit-name').value = stop.name || ''
+  document.getElementById('edit-note').value = stop.note || ''
+  // Hide search when editing existing
+  const sg=document.getElementById('search-group'); if(sg) sg.style.display='none'
+  
+  const iconGrid = document.getElementById('icon-grid')
+  iconGrid.innerHTML = ICONS.map(ic =>
+    `<div class="icon-opt${ic===stop.icon?' sel':''}" onclick="selectIcon(this,'${ic}')">${ic}</div>`
+  ).join('')
+  
+  document.getElementById('edit-modal').classList.add('show')
+}
+
+function selectIcon(el, icon) {
+  document.querySelectorAll('.icon-opt').forEach(o => o.classList.remove('sel'))
+  el.classList.add('sel')
+}
+
+function saveEdit() {
+  const time = document.getElementById('edit-time').value
+  const name = document.getElementById('edit-name').value.trim()
+  const note = document.getElementById('edit-note').value.trim()
+  const icon = document.querySelector('.icon-opt.sel')?.textContent || '⭐'
+  if (!name) return
+  
+  const day = getDay(state.currentDayId)
+  // Find in custom stops
+  if (!state.customStops[day.id]) state.customStops[day.id] = []
+  const customIdx = state.customStops[day.id].findIndex(s => s.id === activeStopId)
+  
+  if (customIdx >= 0) {
+    Object.assign(state.customStops[day.id][customIdx], {time, name, note, icon})
+  } else {
+    // Find in original and clone to custom
+    const orig = day.stops.find(s => s.id === activeStopId)
+    if (orig) {
+      const updated = {...orig, time, name, note, icon}
+      state.customStops[day.id].push(updated)
+      // Mark original as overridden
+      state.customStops[day.id].forEach(s => {
+        if (s.id === activeStopId) Object.assign(s, {time, name, note, icon})
+      })
+    }
+  }
+  
+  saveState()
+  closeModal()
+  renderItinerary(state.currentDayId)
+}
+
+function asDelete() {
+  if (!confirm('確定刪除這個景點嗎？')) return
+  closeAll()
+  const day = getDay(state.currentDayId)
+  if (!state.customStops[day.id]) state.customStops[day.id] = []
+  // Mark as deleted via a tombstone approach
+  const tombstone = {id: activeStopId, deleted: true, name:'', time:'', icon:'', note:'', tags:[], type:'', color:'', bg:''}
+  const idx = state.customStops[day.id].findIndex(s => s.id === activeStopId)
+  if (idx >= 0) {
+    state.customStops[day.id][idx] = tombstone
+  } else {
+    state.customStops[day.id].push(tombstone)
+  }
+  delete state.checked[activeStopId]
+  saveState()
+  renderItinerary(state.currentDayId)
+}
+
+function asMove() {
+  closeAll()
+  const dayNames = DAYS.map(d => `D${d.id}: ${d.title}`).join('\n')
+  const choice = prompt(`移到哪一天？\n${dayNames}\n\n請輸入天數（1-8）:`)
+  const targetId = parseInt(choice)
+  if (!targetId || targetId < 1 || targetId > 8 || targetId === state.currentDayId) return
+  
+  const day = getDay(state.currentDayId)
+  const stop = getStops(day).find(s => s.id === activeStopId)
+  if (!stop) return
+  
+  // Add to target day
+  if (!state.customStops[targetId]) state.customStops[targetId] = []
+  const newStop = {...stop, id: `custom-${Date.now()}`}
+  state.customStops[targetId].push(newStop)
+  
+  // Delete from current
+  asDelete()
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.remove('show')
+}
+
+// ═══════════════════════════════════════
+// ADD NEW STOP
+// ═══════════════════════════════════════
+function selectType(el) {
+  document.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('on'))
+  el.classList.add('on')
+}
+
+function openAddModal() {
+  activeStopId = null
+  searchedLat = null; searchedLng = null
+  document.getElementById('modal-title').textContent = '新增景點'
+  document.getElementById('edit-time').value = ''
+  document.getElementById('edit-name').value = ''
+  document.getElementById('edit-note').value = ''
+  const si=document.getElementById('search-input'); if(si) si.value=''
+  const sr=document.getElementById('search-results'); if(sr){sr.style.display='none';sr.innerHTML=''}
+  const sg=document.getElementById('search-group'); if(sg) sg.style.display='block'
+  // Reset type to spot
+  document.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('on'))
+  const firstType=document.querySelector('.type-opt'); if(firstType) firstType.classList.add('on')
+
+  const iconGrid = document.getElementById('icon-grid')
+  iconGrid.innerHTML = ICONS.map((ic,i) =>
+    `<div class="icon-opt${i===0?' sel':''}" onclick="selectIcon(this,'${ic}')">${ic}</div>`
+  ).join('')
+
+  document.getElementById('edit-modal').classList.add('show')
+  document.getElementById('edit-name').focus()
+}
+
+const _origSaveEdit = saveEdit
+window.saveEdit = function() {
+  if (activeStopId !== null) {
+    // Hide search group when editing (not adding)
+    _origSaveEdit(); return
+  }
+  
+  const time = document.getElementById('edit-time').value || '00:00'
+  const name = document.getElementById('edit-name').value.trim()
+  const note = document.getElementById('edit-note').value.trim()
+  const icon = document.querySelector('.icon-opt.sel')?.textContent || '⭐'
+  if (!name) { alert('請輸入景點名稱'); return }
+  if (!/^\d{2}:\d{2}$/.test(time)) { alert('請輸入正確的時間格式（例如 09:30）'); return }
+
+  // Get selected type
+  const selType = document.querySelector('.type-opt.on')
+  const stopType = selType?.dataset.type || 'spot'
+  const stopColor = selType?.dataset.color || '#378ADD'
+  const stopBg = selType?.dataset.bg || '#E6F1FB'
+
+  const day = getDay(state.currentDayId)
+  if (!state.customStops[day.id]) state.customStops[day.id] = []
+
+  state.customStops[day.id].push({
+    id: `custom-${Date.now()}`,
+    time, name, note, icon,
+    type: stopType, color: stopColor, bg: stopBg,
+    tags: ['新增'],
+    lat: searchedLat || null,
+    lng: searchedLng || null
+  })
+  
+  saveState()
+  closeModal()
+  renderItinerary(state.currentDayId)
+}
+
+// ═══════════════════════════════════════
+// AI ASSISTANT
+// ═══════════════════════════════════════
+function showKeyModal() {
+  const km = document.getElementById('key-modal')
+  km.classList.add('show')
+  const ki = document.getElementById('key-input')
+  const gi = document.getElementById('gkey-input')
+  if(ki) ki.value = state.apiKey || ''
+  if(gi) gi.value = state.googleKey || ''
+}
+
+function closeKeyModal() {
+  document.getElementById('key-modal').classList.remove('show')
+}
+
+function saveApiKey() {
+  const k = document.getElementById('key-input').value.trim()
+  if (!k) { alert('請輸入 AI 助理金鑰'); return }
+  state.apiKey = k
+  saveState()
+  closeKeyModal()
+  // Refresh AI screen
+  const messagesEl = document.getElementById('chat-messages')
+  if(messagesEl) messagesEl.innerHTML=''
+  initAIChat()
+}
+
+function initAIChat() {
+  const nokeyEl = document.getElementById('ai-nokey-screen')
+  const messagesEl = document.getElementById('chat-messages')
+  const quickEl = document.getElementById('quick-actions')
+  const inputEl = document.querySelector('.ai-input-row')
+
+  if (!state.apiKey) {
+    if(nokeyEl) nokeyEl.style.display='flex'
+    if(messagesEl) messagesEl.style.display='none'
+    if(quickEl) quickEl.style.display='none'
+    if(inputEl) inputEl.style.display='none'
+    return
+  }
+
+  if(nokeyEl) nokeyEl.style.display='none'
+  if(messagesEl) messagesEl.style.display=''
+  if(quickEl) quickEl.style.display=''
+  if(inputEl) inputEl.style.display=''
+
+  if (messagesEl && messagesEl.children.length > 0) return
+
+  const day = getDay(state.currentDayId)
+  addAIMsg('ai', `你好！我知道你今天在 ${day.city}，行程是「${day.title}」。今天已完成 ${getStops(day).filter(s=>state.checked[s.id]).length}/${getStops(day).length} 個景點。有什麼需要幫忙的嗎？`)
+  document.getElementById('ai-status').textContent = '✅ 已連線・隨時問'
+
+  const quickByDay = {
+    1: ['如何買指定席券？','飯店怎麼走？','東急百貨幾點關？'],
+    2: ['六花亭判官樣好吃嗎？','白色戀人公園幾點到？','御守怎麼使用？'],
+    3: ['LeTAO 怎麼走？','小樽運河拍照最佳角度？','蒸汽鐘幾分鐘噴一次？'],
+    4: ['洞爺湖和昭和新山哪個先去？','遊覧船需要預約嗎？'],
+    5: ['朝里站怎麼嗶交通卡？','琴似伊藤洋華堂有什麼好買？'],
+    6: ['富田農場薰衣草幾月最美？','薰衣草收割體驗怎麼參加？'],
+    8: ['幾點要到機場辦理報到？','行李超重怎麼辦？'],
+  }
+  const quick = quickByDay[state.currentDayId] || ['現在下雨怎麼辦？','幫我說五辛限制的日文','附近有什麼推薦？']
+  quick.push('附近廁所在哪？')
+  if(quickEl) quickEl.innerHTML = quick.map(q=>
+    `<button class="qbtn" onclick="quickAsk('${q.replace(/'/g,"\\'")}'">${q}</button>`
+  ).join('')
+}
+
+function quickAsk(q) {
+  document.getElementById('ai-input').value = q
+  sendAI()
+}
+
+function addAIMsg(role, text) {
+  const messagesEl = document.getElementById('chat-messages')
+  const wrap = document.createElement('div')
+  wrap.className = `msg-wrap ${role}`
+  const time = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})
+  wrap.innerHTML = `<div class="bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div>`
+  messagesEl.appendChild(wrap)
+  messagesEl.scrollTop = messagesEl.scrollHeight
+}
+
+function addTyping() {
+  const el = document.createElement('div')
+  el.className = 'msg-wrap ai'
+  el.id = 'typing-indicator'
+  el.innerHTML = `<div class="bubble msg-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`
+  document.getElementById('chat-messages').appendChild(el)
+  document.getElementById('chat-messages').scrollTop = 99999
+  return el
+}
+
+function aiKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI() }
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input')
+  const text = input.value.trim()
+  if (!text) return
+  
+  if (!state.apiKey) { showKeyModal(); return }
+  
+  input.value = ''
+  addAIMsg('user', text)
+  
+  const sendBtn = document.getElementById('send-btn')
+  sendBtn.disabled = true
+  const typing = addTyping()
+  
+  try {
+    const day = getDay(state.currentDayId)
+    const stops = getStops(day)
+    const doneStops = stops.filter(s=>state.checked[s.id]).map(s=>s.name)
+    const todoStops = stops.filter(s=>!state.checked[s.id]).map(s=>s.name)
+    const gpsStr = currentGPS ? `使用者目前GPS位置：緯度${currentGPS.lat.toFixed(5)}，經度${currentGPS.lng.toFixed(5)}。` : ''
+    const nextStop = findNextStop ? findNextStop(stops) : null
+    const nextStr = nextStop ? `推薦下一站：${nextStop.name}。` : ''
+
+    const systemPrompt = `你是北海道旅遊助理，了解使用者的完整行程。
+今天：第${day.id}天（${day.date}），${day.title}，在${day.city}。
+${gpsStr}${nextStr}
+已完成景點：${doneStops.join('、')||'無'}。
+未完成景點：${todoStops.join('、')||'無'}。
+重要：使用者有五辛飲食限制（不吃蔥、洋蔥、大蒜、韭菜、蕗蕎）。
+請用繁體中文回答，簡潔友善，每次回覆不超過200字。如果知道使用者的GPS，可以給出更精確的方向指引。`
+
+    const messages = [
+      ...state.aiHistory.slice(-8),
+      {role:'user', content: text}
+    ]
+    
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': state.apiKey,
+        'anthropic-version':'2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 500,
+        system: systemPrompt,
+        messages
+      })
+    })
+    
+    const data = await res.json()
+    if (data.error) throw new Error(data.error.message)
+    
+    const reply = data.content[0].text
+    state.aiHistory.push({role:'user', content:text})
+    state.aiHistory.push({role:'assistant', content:reply})
+    if (state.aiHistory.length > 20) state.aiHistory = state.aiHistory.slice(-20)
+    saveState()
+    
+    typing.remove()
+    addAIMsg('ai', reply)
+  } catch(err) {
+    typing.remove()
+    addAIMsg('ai', `⚠️ 錯誤：${err.message}。請確認 API Key 是否正確，或檢查網路連線。`)
+  }
+  
+  sendBtn.disabled = false
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showScreen(name) {
+  if (state.currentScreen==='map'&&name!=='map') stopTracking()
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'))
+  document.getElementById(`screen-${name}`).classList.add('active')
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.toggle('on',b.dataset.screen===name))
+  state.currentScreen=name
+  if(name==='map') {
+    if (state.googleKey && !window.google) loadGoogleMaps(state.googleKey)
+    else initMap(getDay(state.currentDayId))
+  }
+  else if(name==='ai') initAIChat()
+  else if(name==='transport') renderTransport(state.currentDayId)
+}
+
+// ═══════════════════════════════════════
+// TRANSPORT SCREEN
+// ═══════════════════════════════════════
+function renderTransport(dayId) {
+  state.currentDayId=dayId
+  const dayNum=['一','二','三','四','五','六','七','八'][dayId-1]
+  const el=document.getElementById('tx-day-badge'); if(el) el.textContent=`第${dayNum}天`
+  document.querySelectorAll('#tx-day-tabs .dtab').forEach(t=>t.classList.toggle('on',parseInt(t.dataset.day)===dayId))
+  const content=document.getElementById('transport-content'); if(!content) return
+  content.innerHTML=''
+  const routes=TRANSPORT_DATA[dayId]
+  if(!routes||!routes.length){ content.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">今日無特定交通指引</div>'; return }
+  routes.forEach((route,ri)=>{
+    const sec=document.createElement('div'); sec.className='tx-section'
+    const stepsHtml=route.steps.map((step,si)=>{
+      const key=`tx-${dayId}-${ri}-${si}`; const done=!!state.txChecked[key]
+      return `<div class="tx-step">
+        <button class="tx-step-chk${done?' on':''}" onclick="toggleTxStep('${key}',this)">${done?'✓':''}</button>
+        <div class="tx-step-num${done?' done':''}">${si+1}</div>
+        <div class="tx-step-body">
+          <div class="tx-step-text" style="${done?'opacity:.5':''}">${step.text}</div>
+          ${step.warn?`<div class="tx-warn">⚠️ ${step.warn}</div>`:''}
+          ${step.note?`<div class="tx-note">💡 ${step.note}</div>`:''}
+        </div></div>`
+    }).join('')
+    const timesHtml=route.times.map(t=>`<span class="tx-time${t===route.recommended?' recommended':''}">${t}${t===route.recommended?' ★':''}</span>`).join('')
+    sec.innerHTML=`
+      <div class="tx-section-head">
+        <span class="tx-route-badge">${route.label}</span>
+        <div class="tx-route-name">${route.route}</div>
+        <a href="${route.gmaps}" target="_blank" class="tx-gmaps">🗺️ 查即時班次（Google Maps）</a>
+      </div>
+      <div class="tx-timetable">
+        <div class="tx-timetable-title">靜態時刻表 · ★ 建議班次（可準時到達下一景點）</div>
+        <div class="tx-times">${timesHtml}</div>
+      </div>
+      <div class="tx-steps-title">搭車 SOP</div>${stepsHtml}`
+    content.appendChild(sec)
+  })
+}
+
+function toggleTxStep(key,btn) {
+  state.txChecked[key]=!state.txChecked[key]; saveState()
+  btn.classList.toggle('on',state.txChecked[key]); btn.textContent=state.txChecked[key]?'✓':''
+  const n=btn.nextElementSibling; if(n) n.classList.toggle('done',state.txChecked[key])
+  const t=btn.parentElement.querySelector('.tx-step-text'); if(t) t.style.opacity=state.txChecked[key]?'0.5':''
+}
+
+// ═══════════════════════════════════════
+// BADGES
+// ═══════════════════════════════════════
+function updateBadges() {
+  const day=getDay(state.currentDayId); if(!day) return
+  const stops=getStops(day)
+  const remaining=stops.filter(s=>!state.checked[s.id]).length
+  const ib=document.getElementById('badge-itinerary')
+  if(ib){ ib.textContent=remaining||''; ib.classList.toggle('show',remaining>0) }
+  const mb=document.getElementById('badge-map')
+  if(mb){ const cnt=document.querySelectorAll('.nearby-row').length; mb.textContent=cnt||''; mb.classList.toggle('show',cnt>0) }
+}
+
+// ═══════════════════════════════════════
+// INSTALL PROMPT
+// ═══════════════════════════════════════
+function showInstallPrompt() {
+  if(localStorage.getItem('hk-install-dismissed')) return
+  const prompt=document.getElementById('install-prompt'); if(!prompt) return
+  const desc=document.getElementById('install-desc')
+  const isIOS=/iP(hone|od|ad)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)
+  const isAndroid=/Android/.test(navigator.userAgent)
+  if(isIOS&&desc) desc.textContent='點下方 分享⎋ → 加入主畫面'
+  else if(isAndroid&&desc) desc.textContent='點右上角選單⋮ → 安裝應用程式'
+  else if(desc) desc.textContent='在瀏覽器選單中選擇「安裝」'
+  setTimeout(()=>{ prompt.style.display='block' },2500)
+}
+
+function closeInstall() {
+  const p=document.getElementById('install-prompt'); if(p) p.style.display='none'
+  localStorage.setItem('hk-install-dismissed','1')
+}
+
+// ═══════════════════════════════════════
+// SERVICE WORKER
+// ═══════════════════════════════════════
+function registerSW() {
+  if(!('serviceWorker' in navigator)) return
+  const swCode=`const CACHE='hk2025-sw1';self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.add('/')))});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))))});self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.hostname.includes('tile.openstreetmap')||u.hostname.includes('unpkg.com')||u.hostname.includes('jsdelivr')){e.respondWith(caches.open(CACHE).then(c=>c.match(e.request).then(r=>r||(fetch(e.request).then(resp=>{c.put(e.request,resp.clone());return resp})))))}else if(u.hostname.includes('api.')||u.hostname.includes('overpass')){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))}else{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{caches.open(CACHE).then(c=>c.put(e.request,resp.clone()));return resp})))}});`
+  const blob=new Blob([swCode],{type:'application/javascript'})
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{})
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init() {
+  loadState()
+  if(!state.currentDayId) state.currentDayId=getCurrentDay()
+
+  // Build itinerary day tabs
+  const tabsEl=document.getElementById('day-tabs')
+  DAYS.forEach(day=>{
+    const btn=document.createElement('button')
+    btn.className=`dtab${day.id===state.currentDayId?' on':''}`
+    btn.dataset.day=day.id
+    btn.innerHTML=`${day.label}<span>${day.emoji}</span>`
+    btn.onclick=()=>{ if(isEditMode)toggleEditMode(); renderItinerary(day.id); saveState(); updateBadges() }
+    tabsEl.appendChild(btn)
+  })
+
+  // Build transport day tabs
+  const txTabsEl=document.getElementById('tx-day-tabs')
+  if(txTabsEl) DAYS.forEach(day=>{
+    const btn=document.createElement('button')
+    btn.className=`dtab${day.id===state.currentDayId?' on':''}`
+    btn.dataset.day=day.id
+    btn.innerHTML=`${day.label}<span>${day.emoji}</span>`
+    btn.onclick=()=>{ renderTransport(day.id); saveState() }
+    txTabsEl.appendChild(btn)
+  })
+
+  renderItinerary(state.currentDayId)
+  updateBadges()
+  showInstallPrompt()
+  registerSW()
+  // Load Google Maps if key already saved
+  if (state.googleKey) loadGoogleMaps(state.googleKey)
+
+  // Refresh time awareness every minute
+  setInterval(()=>{ if(state.currentScreen==='itinerary') renderItinerary(state.currentDayId); updateBadges() },60000)
+}
+
+document.addEventListener('DOMContentLoaded', init)
+</script>
+</body>
+</html>
